@@ -5,14 +5,12 @@ import 'package:lunasea/modules/radarr.dart';
 import 'package:lunasea/modules/sonarr.dart';
 import 'package:lunasea/modules/settings.dart';
 import 'package:lunasea/modules/tautulli.dart';
+import 'package:lunasea/modules/tdarr.dart';
 
 class SettingsHeaderRoute extends StatefulWidget {
   final LunaModule module;
 
-  const SettingsHeaderRoute({
-    Key? key,
-    required this.module,
-  }) : super(key: key);
+  const SettingsHeaderRoute({Key? key, required this.module}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -35,12 +33,13 @@ class _State extends State<SettingsHeaderRoute> with LunaScrollControllerMixin {
     return LunaBottomActionBar(
       actions: [
         LunaButton.text(
-            text: 'settings.AddHeader'.tr(),
-            icon: Icons.add_rounded,
-            onTap: () async {
-              await HeaderUtility().addHeader(context, headers: _headers());
-              _resetState();
-            }),
+          text: 'settings.AddHeader'.tr(),
+          icon: Icons.add_rounded,
+          onTap: () async {
+            await HeaderUtility().addHeader(context, headers: _headers());
+            _resetState();
+          },
+        ),
       ],
     );
   }
@@ -80,16 +79,17 @@ class _State extends State<SettingsHeaderRoute> with LunaScrollControllerMixin {
       title: key,
       body: [TextSpan(text: value)],
       trailing: LunaIconButton(
-          icon: LunaIcons.DELETE,
-          color: LunaColours.red,
-          onPressed: () async {
-            await HeaderUtility().deleteHeader(
-              context,
-              key: key,
-              headers: _headers(),
-            );
-            _resetState();
-          }),
+        icon: LunaIcons.DELETE,
+        color: LunaColours.red,
+        onPressed: () async {
+          await HeaderUtility().deleteHeader(
+            context,
+            key: key,
+            headers: _headers(),
+          );
+          _resetState();
+        },
+      ),
     );
   }
 
@@ -119,6 +119,8 @@ class _State extends State<SettingsHeaderRoute> with LunaScrollControllerMixin {
         throw Exception('Overseerr does not have a headers page');
       case LunaModule.TAUTULLI:
         return LunaProfile.current.tautulliHeaders;
+      case LunaModule.TDARR:
+        return LunaProfile.current.tdarrHeaders;
     }
   }
 
@@ -146,6 +148,8 @@ class _State extends State<SettingsHeaderRoute> with LunaScrollControllerMixin {
         throw Exception('Wake on LAN does not have a global state');
       case LunaModule.TAUTULLI:
         return context.read<TautulliState>().reset();
+      case LunaModule.TDARR:
+        return context.read<TdarrState>().reset();
       case LunaModule.OVERSEERR:
         return;
     }

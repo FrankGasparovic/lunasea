@@ -50,6 +50,8 @@ dependencies:
   window_manager: ^0.5.2
   xml: ^7.0.1
 dev_dependencies:
+  flutter_test:
+    sdk: flutter
   # Generators
   build_runner: ^2.14.1
   environment_config: ^4.0.0+1

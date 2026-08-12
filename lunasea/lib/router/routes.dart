@@ -13,6 +13,7 @@ import 'package:lunasea/router/routes/search.dart';
 import 'package:lunasea/router/routes/settings.dart';
 import 'package:lunasea/router/routes/sonarr.dart';
 import 'package:lunasea/router/routes/tautulli.dart';
+import 'package:lunasea/router/routes/tdarr.dart';
 import 'package:lunasea/vendor.dart';
 import 'package:lunasea/widgets/pages/not_enabled.dart';
 
@@ -27,15 +28,13 @@ enum LunaRoutes {
   search('search', root: SearchRoutes.HOME),
   settings('settings', root: SettingsRoutes.HOME),
   sonarr('sonarr', root: SonarrRoutes.HOME),
-  tautulli('tautulli', root: TautulliRoutes.HOME);
+  tautulli('tautulli', root: TautulliRoutes.HOME),
+  tdarr('tdarr', root: TdarrRoutes.HOME);
 
   final String key;
   final LunaRoutesMixin root;
 
-  const LunaRoutes(
-    this.key, {
-    required this.root,
-  });
+  const LunaRoutes(this.key, {required this.root});
 
   static String get initialLocation => BIOSRoutes.HOME.path;
 }
@@ -69,14 +68,8 @@ mixin LunaRoutesMixin on Enum {
     );
   }
 
-  GoRoute redirect({
-    required GoRouterRedirect redirect,
-  }) {
-    return GoRoute(
-      path: path,
-      name: _routeName,
-      redirect: redirect,
-    );
+  GoRoute redirect({required GoRouterRedirect redirect}) {
+    return GoRoute(path: path, name: _routeName, redirect: redirect);
   }
 
   void go({

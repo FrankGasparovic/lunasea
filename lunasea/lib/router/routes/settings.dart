@@ -43,6 +43,9 @@ import 'package:lunasea/modules/settings/routes/configuration_tautulli/pages/con
 import 'package:lunasea/modules/settings/routes/configuration_tautulli/pages/default_pages.dart';
 import 'package:lunasea/modules/settings/routes/configuration_tautulli/pages/headers.dart';
 import 'package:lunasea/modules/settings/routes/configuration_tautulli/route.dart';
+import 'package:lunasea/modules/settings/routes/configuration_tdarr/route.dart';
+import 'package:lunasea/modules/settings/routes/configuration_tdarr/connection_details.dart';
+import 'package:lunasea/modules/settings/routes/configuration_tdarr/headers.dart';
 import 'package:lunasea/modules/settings/routes/configuration_wake_on_lan/route.dart';
 import 'package:lunasea/modules/settings/routes/profiles/route.dart';
 import 'package:lunasea/modules/settings/routes/settings/route.dart';
@@ -96,6 +99,9 @@ enum SettingsRoutes with LunaRoutesMixin {
   CONFIGURATION_TAUTULLI_CONNECTION_DETAILS('connection_details'),
   CONFIGURATION_TAUTULLI_CONNECTION_DETAILS_HEADERS('headers'),
   CONFIGURATION_TAUTULLI_DEFAULT_PAGES('default_pages'),
+  CONFIGURATION_TDARR('tdarr'),
+  CONFIGURATION_TDARR_CONNECTION_DETAILS('connection_details'),
+  CONFIGURATION_TDARR_CONNECTION_DETAILS_HEADERS('headers'),
   CONFIGURATION_WAKE_ON_LAN('wake_on_lan'),
   PROFILES('profiles'),
   SYSTEM('system'),
@@ -135,10 +141,12 @@ enum SettingsRoutes with LunaRoutesMixin {
       case SettingsRoutes.CONFIGURATION_EXTERNAL_MODULES_ADD:
         return route(widget: const ConfigurationExternalModulesAddRoute());
       case SettingsRoutes.CONFIGURATION_EXTERNAL_MODULES_EDIT:
-        return route(builder: (_, state) {
-          final moduleId = int.tryParse(state.pathParameters['id']!) ?? -1;
-          return ConfigurationExternalModulesEditRoute(moduleId: moduleId);
-        });
+        return route(
+          builder: (_, state) {
+            final moduleId = int.tryParse(state.pathParameters['id']!) ?? -1;
+            return ConfigurationExternalModulesEditRoute(moduleId: moduleId);
+          },
+        );
       case SettingsRoutes.CONFIGURATION_LIDARR:
         return route(widget: const ConfigurationLidarrRoute());
       case SettingsRoutes.CONFIGURATION_LIDARR_CONNECTION_DETAILS:
@@ -190,20 +198,26 @@ enum SettingsRoutes with LunaRoutesMixin {
       case SettingsRoutes.CONFIGURATION_SEARCH_ADD_INDEXER:
         return route(widget: const ConfigurationSearchAddIndexerRoute());
       case SettingsRoutes.CONFIGURATION_SEARCH_ADD_INDEXER_HEADERS:
-        return route(builder: (_, state) {
-          final indexer = state.extra as LunaIndexer?;
-          return ConfigurationSearchAddIndexerHeadersRoute(indexer: indexer);
-        });
+        return route(
+          builder: (_, state) {
+            final indexer = state.extra as LunaIndexer?;
+            return ConfigurationSearchAddIndexerHeadersRoute(indexer: indexer);
+          },
+        );
       case SettingsRoutes.CONFIGURATION_SEARCH_EDIT_INDEXER:
-        return route(builder: (_, state) {
-          final id = int.tryParse(state.pathParameters['id']!) ?? -1;
-          return ConfigurationSearchEditIndexerRoute(id: id);
-        });
+        return route(
+          builder: (_, state) {
+            final id = int.tryParse(state.pathParameters['id']!) ?? -1;
+            return ConfigurationSearchEditIndexerRoute(id: id);
+          },
+        );
       case SettingsRoutes.CONFIGURATION_SEARCH_EDIT_INDEXER_HEADERS:
-        return route(builder: (_, state) {
-          final id = int.tryParse(state.pathParameters['id']!) ?? -1;
-          return ConfigurationSearchEditIndexerHeadersRoute(id: id);
-        });
+        return route(
+          builder: (_, state) {
+            final id = int.tryParse(state.pathParameters['id']!) ?? -1;
+            return ConfigurationSearchEditIndexerHeadersRoute(id: id);
+          },
+        );
       case SettingsRoutes.CONFIGURATION_SONARR:
         return route(widget: const ConfigurationSonarrRoute());
       case SettingsRoutes.CONFIGURATION_SONARR_CONNECTION_DETAILS:
@@ -228,6 +242,12 @@ enum SettingsRoutes with LunaRoutesMixin {
         );
       case SettingsRoutes.CONFIGURATION_TAUTULLI_DEFAULT_PAGES:
         return route(widget: const ConfigurationTautulliDefaultPagesRoute());
+      case SettingsRoutes.CONFIGURATION_TDARR:
+        return route(widget: const ConfigurationTdarrRoute());
+      case SettingsRoutes.CONFIGURATION_TDARR_CONNECTION_DETAILS:
+        return route(widget: const ConfigurationTdarrConnectionDetailsRoute());
+      case SettingsRoutes.CONFIGURATION_TDARR_CONNECTION_DETAILS_HEADERS:
+        return route(widget: const ConfigurationTdarrHeadersRoute());
       case SettingsRoutes.CONFIGURATION_WAKE_ON_LAN:
         return route(widget: const ConfigurationWakeOnLANRoute());
       case SettingsRoutes.PROFILES:
@@ -237,10 +257,12 @@ enum SettingsRoutes with LunaRoutesMixin {
       case SettingsRoutes.SYSTEM_LOGS:
         return route(widget: const SystemLogsRoute());
       case SettingsRoutes.SYSTEM_LOGS_DETAILS:
-        return route(builder: (_, state) {
-          final type = LunaLogType.fromKey(state.pathParameters['type']!);
-          return SystemLogsDetailsRoute(type: type);
-        });
+        return route(
+          builder: (_, state) {
+            final type = LunaLogType.fromKey(state.pathParameters['type']!);
+            return SystemLogsDetailsRoute(type: type);
+          },
+        );
     }
   }
 
@@ -267,6 +289,7 @@ enum SettingsRoutes with LunaRoutesMixin {
           SettingsRoutes.CONFIGURATION_SEARCH.routes,
           SettingsRoutes.CONFIGURATION_SONARR.routes,
           SettingsRoutes.CONFIGURATION_TAUTULLI.routes,
+          SettingsRoutes.CONFIGURATION_TDARR.routes,
           SettingsRoutes.CONFIGURATION_WAKE_ON_LAN.routes,
         ];
       case SettingsRoutes.CONFIGURATION_DASHBOARD:
@@ -310,7 +333,8 @@ enum SettingsRoutes with LunaRoutesMixin {
       case SettingsRoutes.CONFIGURATION_SABNZBD_CONNECTION_DETAILS:
         return [
           SettingsRoutes
-              .CONFIGURATION_SABNZBD_CONNECTION_DETAILS_HEADERS.routes,
+              .CONFIGURATION_SABNZBD_CONNECTION_DETAILS_HEADERS
+              .routes,
         ];
       case SettingsRoutes.CONFIGURATION_SEARCH:
         return [
@@ -318,9 +342,7 @@ enum SettingsRoutes with LunaRoutesMixin {
           SettingsRoutes.CONFIGURATION_SEARCH_EDIT_INDEXER.routes,
         ];
       case SettingsRoutes.CONFIGURATION_SEARCH_ADD_INDEXER:
-        return [
-          SettingsRoutes.CONFIGURATION_SEARCH_ADD_INDEXER_HEADERS.routes,
-        ];
+        return [SettingsRoutes.CONFIGURATION_SEARCH_ADD_INDEXER_HEADERS.routes];
       case SettingsRoutes.CONFIGURATION_SEARCH_EDIT_INDEXER:
         return [
           SettingsRoutes.CONFIGURATION_SEARCH_EDIT_INDEXER_HEADERS.routes,
@@ -340,10 +362,17 @@ enum SettingsRoutes with LunaRoutesMixin {
           SettingsRoutes.CONFIGURATION_TAUTULLI_CONNECTION_DETAILS.routes,
           SettingsRoutes.CONFIGURATION_TAUTULLI_DEFAULT_PAGES.routes,
         ];
+      case SettingsRoutes.CONFIGURATION_TDARR:
+        return [SettingsRoutes.CONFIGURATION_TDARR_CONNECTION_DETAILS.routes];
+      case SettingsRoutes.CONFIGURATION_TDARR_CONNECTION_DETAILS:
+        return [
+          SettingsRoutes.CONFIGURATION_TDARR_CONNECTION_DETAILS_HEADERS.routes,
+        ];
       case SettingsRoutes.CONFIGURATION_TAUTULLI_CONNECTION_DETAILS:
         return [
           SettingsRoutes
-              .CONFIGURATION_TAUTULLI_CONNECTION_DETAILS_HEADERS.routes,
+              .CONFIGURATION_TAUTULLI_CONNECTION_DETAILS_HEADERS
+              .routes,
         ];
       case SettingsRoutes.CONFIGURATION_EXTERNAL_MODULES:
         return [
@@ -351,13 +380,9 @@ enum SettingsRoutes with LunaRoutesMixin {
           SettingsRoutes.CONFIGURATION_EXTERNAL_MODULES_EDIT.routes,
         ];
       case SettingsRoutes.SYSTEM:
-        return [
-          SettingsRoutes.SYSTEM_LOGS.routes,
-        ];
+        return [SettingsRoutes.SYSTEM_LOGS.routes];
       case SettingsRoutes.SYSTEM_LOGS:
-        return [
-          SettingsRoutes.SYSTEM_LOGS_DETAILS.routes,
-        ];
+        return [SettingsRoutes.SYSTEM_LOGS_DETAILS.routes];
       default:
         return const <GoRoute>[];
     }

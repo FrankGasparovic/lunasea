@@ -149,6 +149,22 @@ class LunaProfile extends HiveObject {
   @HiveField(43, defaultValue: <String, String>{})
   Map<String, String> overseerrHeaders;
 
+  @JsonKey()
+  @HiveField(44, defaultValue: false)
+  bool tdarrEnabled;
+
+  @JsonKey()
+  @HiveField(45, defaultValue: '')
+  String tdarrHost;
+
+  @JsonKey()
+  @HiveField(46, defaultValue: '')
+  String tdarrKey;
+
+  @JsonKey()
+  @HiveField(47, defaultValue: <String, String>{})
+  Map<String, String> tdarrHeaders;
+
   LunaProfile._internal({
     //Lidarr
     required this.lidarrEnabled,
@@ -190,6 +206,11 @@ class LunaProfile extends HiveObject {
     required this.overseerrHost,
     required this.overseerrKey,
     required this.overseerrHeaders,
+    //Tdarr
+    required this.tdarrEnabled,
+    required this.tdarrHost,
+    required this.tdarrKey,
+    required this.tdarrHeaders,
   });
 
   factory LunaProfile({
@@ -233,6 +254,11 @@ class LunaProfile extends HiveObject {
     String? overseerrHost,
     String? overseerrKey,
     Map<String, String>? overseerrHeaders,
+    //Tdarr
+    bool? tdarrEnabled,
+    String? tdarrHost,
+    String? tdarrKey,
+    Map<String, String>? tdarrHeaders,
   }) {
     return LunaProfile._internal(
       // Lidarr
@@ -275,6 +301,11 @@ class LunaProfile extends HiveObject {
       overseerrHost: overseerrHost ?? '',
       overseerrKey: overseerrKey ?? '',
       overseerrHeaders: overseerrHeaders ?? {},
+      // Tdarr
+      tdarrEnabled: tdarrEnabled ?? false,
+      tdarrHost: tdarrHost ?? '',
+      tdarrKey: tdarrKey ?? '',
+      tdarrHeaders: tdarrHeaders ?? {},
     );
   }
 
