@@ -9,6 +9,7 @@ library radarr;
 // Imports
 import 'package:dio/dio.dart';
 import 'package:lunasea/api/radarr/commands.dart';
+import 'package:lunasea/utils/connection.dart';
 
 /// The core class to handle all connections to Radarr.
 /// Gives you easy access to all implemented command handlers, initialized and ready to call.
@@ -58,13 +59,16 @@ class RadarrAPI {
     bool followRedirects = true,
     int maxRedirects = 5,
   }) {
+    if (!LunaConnectionDetails.isReady(host: host, apiKey: apiKey)) {
+      throw ArgumentError(
+        'A valid HTTP(S) host and nonempty API key are required.',
+      );
+    }
     // Build the HTTP client
     Dio _dio = Dio(
       BaseOptions(
         baseUrl: host.endsWith('/') ? '${host}api/v3/' : '$host/api/v3/',
-        queryParameters: {
-          'apikey': apiKey,
-        },
+        queryParameters: {'apikey': apiKey},
         headers: headers,
         followRedirects: followRedirects,
         maxRedirects: maxRedirects,
@@ -114,9 +118,7 @@ class RadarrAPI {
   ///     ),
   /// );
   /// ```
-  factory RadarrAPI.from({
-    required Dio client,
-  }) {
+  factory RadarrAPI.from({required Dio client}) {
     return RadarrAPI._internal(
       httpClient: client,
       command: RadarrCommandHandlerCommand(client),

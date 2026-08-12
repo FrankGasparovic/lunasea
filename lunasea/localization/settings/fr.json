@@ -300,5 +300,7 @@
     "settings.Method": "Méthode",
     "settings.NotAuthorized": "Non autorisé",
     "settings.NotAvailable": "Non disponible",
-    "settings.NoLogsFound": "Aucun journaux (logs) trouvés"
+    "settings.NoLogsFound": "Aucun journaux (logs) trouvés",
+    "settings.InvalidApiKey": "Invalid API Key",
+    "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again."
 }

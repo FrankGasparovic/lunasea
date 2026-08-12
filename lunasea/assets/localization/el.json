@@ -651,6 +651,8 @@
     "settings.Use24HourTime": "Χρήση 24ωρης ώρας",
     "settings.Use24HourTimeDescription": "Εμφάνιση χρονοσφραγίδων σε στυλ 24 ωρών",
     "settings.User": "Χρήστης",
+    "settings.InvalidApiKey": "Invalid API Key",
+    "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again.",
     "sonarr.AddedSeries": "Προστέθηκε σειρά",
     "sonarr.AddedTag": "Προσθήκη ετικέτας",
     "sonarr.AddReleaseToBlocklist": "Προσθήκη έκδοσης στην λίστα αποκλεισμού",

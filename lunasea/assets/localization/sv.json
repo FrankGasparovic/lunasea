@@ -289,6 +289,8 @@
     "settings.AddModule": "Lägg till modul",
     "settings.AccountDescription": "Ditt LunaSea Konto",
     "settings.Account": "Konto",
+    "settings.InvalidApiKey": "Invalid API Key",
+    "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again.",
     "tautulli.Year": "År",
     "tautulli.ViewWebGUI": "Visa Web GUI",
     "tautulli.Video": "Video",

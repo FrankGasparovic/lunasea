@@ -619,6 +619,8 @@
     "settings.AllLogsDescription": "查看所有类型的日志",
     "settings.CalendarSettingsDescription": "自定义统一日历",
     "settings.Class": "分类",
+    "settings.InvalidApiKey": "Invalid API Key",
+    "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again.",
     "sonarr.AddSeries": "添加系列",
     "sonarr.AddedOn": "添加到",
     "sonarr.Age": "年龄",

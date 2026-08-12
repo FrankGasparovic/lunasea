@@ -5,9 +5,8 @@ import 'package:lunasea/modules/tautulli.dart';
 import 'package:lunasea/router/routes/settings.dart';
 
 class ConfigurationTautulliConnectionDetailsRoute extends StatefulWidget {
-  const ConfigurationTautulliConnectionDetailsRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationTautulliConnectionDetailsRoute({Key? key})
+    : super(key: key);
 
   @override
   State<ConfigurationTautulliConnectionDetailsRoute> createState() => _State();
@@ -35,22 +34,14 @@ class _State extends State<ConfigurationTautulliConnectionDetailsRoute>
   }
 
   Widget _bottomActionBar() {
-    return LunaBottomActionBar(
-      actions: [
-        _testConnection(),
-      ],
-    );
+    return LunaBottomActionBar(actions: [_testConnection()]);
   }
 
   Widget _body() {
     return LunaBox.profiles.listenableBuilder(
       builder: (context, _) => LunaListView(
         controller: scrollController,
-        children: [
-          _host(),
-          _apiKey(),
-          _customHeaders(),
-        ],
+        children: [_host(), _apiKey(), _customHeaders()],
       ),
     );
   }
@@ -108,40 +99,57 @@ class _State extends State<ConfigurationTautulliConnectionDetailsRoute>
       icon: LunaIcons.CONNECTION_TEST,
       onTap: () async {
         LunaProfile _profile = LunaProfile.current;
-        if (_profile.tautulliHost.isEmpty) {
+        if (!LunaConnectionDetails.isValidHost(_profile.tautulliHost)) {
           showLunaErrorSnackBar(
             title: 'settings.HostRequired'.tr(),
-            message: 'settings.HostRequiredMessage'
-                .tr(args: [LunaModule.TAUTULLI.title]),
+            message: 'settings.HostRequiredMessage'.tr(
+              args: [LunaModule.TAUTULLI.title],
+            ),
           );
           return;
         }
-        if (_profile.tautulliKey.isEmpty) {
+        if (!LunaConnectionDetails.hasApiKey(_profile.tautulliKey)) {
           showLunaErrorSnackBar(
             title: 'settings.ApiKeyRequired'.tr(),
-            message: 'settings.ApiKeyRequiredMessage'
-                .tr(args: [LunaModule.TAUTULLI.title]),
+            message: 'settings.ApiKeyRequiredMessage'.tr(
+              args: [LunaModule.TAUTULLI.title],
+            ),
           );
           return;
         }
         TautulliAPI(
-                host: _profile.tautulliHost,
-                apiKey: _profile.tautulliKey,
-                headers: Map<String, dynamic>.from(_profile.tautulliHeaders))
-            .miscellaneous
+              host: _profile.tautulliHost,
+              apiKey: _profile.tautulliKey,
+              headers: Map<String, dynamic>.from(_profile.tautulliHeaders),
+            ).miscellaneous
             .arnold()
-            .then((_) => showLunaSuccessSnackBar(
-                  title: 'settings.ConnectedSuccessfully'.tr(),
-                  message: 'settings.ConnectedSuccessfullyMessage'
-                      .tr(args: [LunaModule.TAUTULLI.title]),
-                ))
+            .then(
+              (_) => showLunaSuccessSnackBar(
+                title: 'settings.ConnectedSuccessfully'.tr(),
+                message: 'settings.ConnectedSuccessfullyMessage'.tr(
+                  args: [LunaModule.TAUTULLI.title],
+                ),
+              ),
+            )
             .catchError((error, trace) {
-          LunaLogger().error('Connection Test Failed', error, trace);
-          showLunaErrorSnackBar(
-            title: 'settings.ConnectionTestFailed'.tr(),
-            error: error,
-          );
-        });
+              LunaLogger().error('Connection Test Failed', error, trace);
+              showLunaErrorSnackBar(
+                title:
+                    error is DioException && error.response?.statusCode == 401
+                    ? 'settings.InvalidApiKey'.tr()
+                    : 'settings.ConnectionTestFailed'.tr(),
+                message:
+                    error is DioException && error.response?.statusCode == 401
+                    ? 'settings.InvalidApiKeyMessage'.tr(
+                        args: [LunaModule.TAUTULLI.title],
+                      )
+                    : null,
+                error:
+                    error is DioException && error.response?.statusCode == 401
+                    ? null
+                    : error,
+              );
+            });
       },
     );
   }

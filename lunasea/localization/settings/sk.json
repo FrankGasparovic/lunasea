@@ -23,5 +23,7 @@
     "settings.AmoledThemeDescription": "Čisto čierna tmavá téma",
     "settings.ApiKeyRequired": "API kľúč požadovaný",
     "settings.AppearanceDescription": "Prispôsobenie vzhľadu a funkcií",
-    "settings.Appearance": "Vzhľad"
+    "settings.Appearance": "Vzhľad",
+    "settings.InvalidApiKey": "Invalid API Key",
+    "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again."
 }

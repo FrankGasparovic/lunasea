@@ -16,6 +16,8 @@
     "dashboard.Monday": "Luni",
     "lidarr.StartSearchFor": "Începe Căutarea Pentru…",
     "lidarr.StartSearchForMissingAlbums": "Începe căutarea pentru albume lipsă",
+    "settings.InvalidApiKey": "Invalid API Key",
+    "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again.",
     "sonarr.AddedOn": "Adăugat La",
     "sonarr.AddedSeries": "Seriale Adăugate",
     "sonarr.AddedTag": "Etichetă Adăugată",

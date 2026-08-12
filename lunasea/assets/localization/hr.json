@@ -17,5 +17,7 @@
     "dashboard.Thursday": "Četvrtak",
     "dashboard.Tuesday": "Utorak",
     "dashboard.TwoWeeks": "Dva tjedna",
-    "dashboard.Wednesday": "Srijeda"
+    "dashboard.Wednesday": "Srijeda",
+    "settings.InvalidApiKey": "Invalid API Key",
+    "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again."
 }

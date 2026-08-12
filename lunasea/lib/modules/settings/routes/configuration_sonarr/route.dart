@@ -4,9 +4,7 @@ import 'package:lunasea/modules/sonarr.dart';
 import 'package:lunasea/router/routes/settings.dart';
 
 class ConfigurationSonarrRoute extends StatefulWidget {
-  const ConfigurationSonarrRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationSonarrRoute({Key? key}) : super(key: key);
 
   @override
   State<ConfigurationSonarrRoute> createState() => _State();
@@ -53,14 +51,41 @@ class _State extends State<ConfigurationSonarrRoute>
         title: 'settings.EnableModule'.tr(args: [LunaModule.SONARR.title]),
         trailing: LunaSwitch(
           value: LunaProfile.current.sonarrEnabled,
-          onChanged: (value) {
-            LunaProfile.current.sonarrEnabled = value;
-            LunaProfile.current.save();
-            context.read<SonarrState>().reset();
-          },
+          onChanged: (value) => _setEnabled(value),
         ),
       ),
     );
+  }
+
+  void _setEnabled(bool value) {
+    final profile = LunaProfile.current;
+    if (value && !LunaConnectionDetails.isValidHost(profile.sonarrHost)) {
+      profile.sonarrEnabled = false;
+      profile.save();
+      showLunaErrorSnackBar(
+        title: 'settings.HostRequired'.tr(),
+        message: 'settings.HostRequiredMessage'.tr(
+          args: [LunaModule.SONARR.title],
+        ),
+      );
+      SettingsRoutes.CONFIGURATION_SONARR_CONNECTION_DETAILS.go();
+      return;
+    }
+    if (value && !LunaConnectionDetails.hasApiKey(profile.sonarrKey)) {
+      profile.sonarrEnabled = false;
+      profile.save();
+      showLunaErrorSnackBar(
+        title: 'settings.ApiKeyRequired'.tr(),
+        message: 'settings.ApiKeyRequiredMessage'.tr(
+          args: [LunaModule.SONARR.title],
+        ),
+      );
+      SettingsRoutes.CONFIGURATION_SONARR_CONNECTION_DETAILS.go();
+      return;
+    }
+    profile.sonarrEnabled = value;
+    profile.save();
+    context.read<SonarrState>().reset();
   }
 
   Widget _connectionDetailsPage() {
@@ -71,7 +96,7 @@ class _State extends State<ConfigurationSonarrRoute>
           text: 'settings.ConnectionDetailsDescription'.tr(
             args: [LunaModule.SONARR.title],
           ),
-        )
+        ),
       ],
       trailing: const LunaIconButton.arrow(),
       onTap: SettingsRoutes.CONFIGURATION_SONARR_CONNECTION_DETAILS.go,
@@ -90,9 +115,7 @@ class _State extends State<ConfigurationSonarrRoute>
   Widget _defaultOptionsPage() {
     return LunaBlock(
       title: 'settings.DefaultOptions'.tr(),
-      body: [
-        TextSpan(text: 'settings.DefaultOptionsDescription'.tr()),
-      ],
+      body: [TextSpan(text: 'settings.DefaultOptionsDescription'.tr())],
       trailing: const LunaIconButton.arrow(),
       onTap: SettingsRoutes.CONFIGURATION_SONARR_DEFAULT_OPTIONS.go,
     );
@@ -112,8 +135,9 @@ class _State extends State<ConfigurationSonarrRoute>
         ],
         trailing: const LunaIconButton(icon: Icons.queue_play_next_rounded),
         onTap: () async {
-          Tuple2<bool, int> result =
-              await SonarrDialogs().setQueuePageSize(context);
+          Tuple2<bool, int> result = await SonarrDialogs().setQueuePageSize(
+            context,
+          );
           if (result.item1) _db.update(result.item2);
         },
       ),

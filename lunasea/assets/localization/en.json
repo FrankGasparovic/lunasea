@@ -651,6 +651,8 @@
     "settings.WeblateDescription": "Help Localize LunaSea",
     "settings.Website": "Website",
     "settings.WebsiteDescription": "Visit LunaSea's Website",
+    "settings.InvalidApiKey": "Invalid API Key",
+    "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again.",
     "sonarr.AddedOn": "Added On",
     "sonarr.AddedSeries": "Added Series",
     "sonarr.AddedTag": "Added Tag",

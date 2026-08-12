@@ -67,10 +67,16 @@ class RadarrState extends LunaModuleState {
   void resetProfile() {
     LunaProfile _profile = LunaProfile.current;
     // Copy profile into state
-    _enabled = _profile.radarrEnabled;
     _host = _profile.radarrHost;
     _apiKey = _profile.radarrKey;
     _headers = _profile.radarrHeaders;
+    _enabled =
+        _profile.radarrEnabled &&
+        LunaConnectionDetails.isReady(host: _host, apiKey: _apiKey);
+    if (_profile.radarrEnabled != _enabled) {
+      _profile.radarrEnabled = false;
+      _profile.save();
+    }
     // Create the API instance if Radarr is enabled
     _api = !_enabled
         ? null
@@ -92,32 +98,33 @@ class RadarrState extends LunaModuleState {
     notifyListeners();
   }
 
-  LunaListViewOption? _moviesViewType =
-      RadarrDatabase.DEFAULT_VIEW_MOVIES.read();
+  LunaListViewOption? _moviesViewType = RadarrDatabase.DEFAULT_VIEW_MOVIES
+      .read();
   LunaListViewOption get moviesViewType => _moviesViewType!;
   set moviesViewType(LunaListViewOption moviesViewType) {
     _moviesViewType = moviesViewType;
     notifyListeners();
   }
 
-  RadarrMoviesSorting? _moviesSortType =
-      RadarrDatabase.DEFAULT_SORTING_MOVIES.read();
+  RadarrMoviesSorting? _moviesSortType = RadarrDatabase.DEFAULT_SORTING_MOVIES
+      .read();
   RadarrMoviesSorting get moviesSortType => _moviesSortType!;
   set moviesSortType(RadarrMoviesSorting moviesSortType) {
     _moviesSortType = moviesSortType;
     notifyListeners();
   }
 
-  RadarrMoviesFilter? _moviesFilterType =
-      RadarrDatabase.DEFAULT_FILTERING_MOVIES.read();
+  RadarrMoviesFilter? _moviesFilterType = RadarrDatabase
+      .DEFAULT_FILTERING_MOVIES
+      .read();
   RadarrMoviesFilter get moviesFilterType => _moviesFilterType!;
   set moviesFilterType(RadarrMoviesFilter moviesFilterType) {
     _moviesFilterType = moviesFilterType;
     notifyListeners();
   }
 
-  bool? _moviesSortAscending =
-      RadarrDatabase.DEFAULT_SORTING_MOVIES_ASCENDING.read();
+  bool? _moviesSortAscending = RadarrDatabase.DEFAULT_SORTING_MOVIES_ASCENDING
+      .read();
   bool get moviesSortAscending => _moviesSortAscending!;
   set moviesSortAscending(bool moviesSortAscending) {
     _moviesSortAscending = moviesSortAscending;
@@ -187,10 +194,7 @@ class RadarrState extends LunaModuleState {
         _notYetReleased.sort((a, b) => a.lunaCompareToByReleaseDate(b));
         _notYetInCinemas.sort((a, b) => a.lunaCompareToByInCinemas(b));
         // Concat and return full array
-        return [
-          ..._notYetReleased,
-          ..._notYetInCinemas,
-        ];
+        return [..._notYetReleased, ..._notYetInCinemas];
       });
   }
 
@@ -212,17 +216,21 @@ class RadarrState extends LunaModuleState {
         _movies.sort((a, b) {
           int? _comparison;
           if (a.lunaEarlierReleaseDate == null &&
-              b.lunaEarlierReleaseDate != null) return 1;
+              b.lunaEarlierReleaseDate != null)
+            return 1;
           if (b.lunaEarlierReleaseDate == null &&
-              a.lunaEarlierReleaseDate != null) return -1;
+              a.lunaEarlierReleaseDate != null)
+            return -1;
           if (a.lunaEarlierReleaseDate == null &&
-              b.lunaEarlierReleaseDate == null) _comparison = 0;
-          _comparison ??=
-              b.lunaEarlierReleaseDate!.compareTo(a.lunaEarlierReleaseDate!);
+              b.lunaEarlierReleaseDate == null)
+            _comparison = 0;
+          _comparison ??= b.lunaEarlierReleaseDate!.compareTo(
+            a.lunaEarlierReleaseDate!,
+          );
           if (_comparison == 0)
-            return a.sortTitle!
-                .toLowerCase()
-                .compareTo(b.sortTitle!.toLowerCase());
+            return a.sortTitle!.toLowerCase().compareTo(
+              b.sortTitle!.toLowerCase(),
+            );
           return _comparison;
         });
         return _movies;
@@ -249,7 +257,8 @@ class RadarrState extends LunaModuleState {
   Future<List<RadarrQualityDefinition>>? get qualityDefinitions =>
       _qualityDefinitions;
   set qualityDefinitions(
-      Future<List<RadarrQualityDefinition>>? qualityDefinitions) {
+    Future<List<RadarrQualityDefinition>>? qualityDefinitions,
+  ) {
     _qualityDefinitions = qualityDefinitions;
     notifyListeners();
   }
@@ -296,9 +305,9 @@ class RadarrState extends LunaModuleState {
   Timer? _getQueueTimer;
 
   void createQueueTimer() => _getQueueTimer = Timer.periodic(
-        Duration(seconds: RadarrDatabase.QUEUE_REFRESH_RATE.read()),
-        (_) => fetchQueue(),
-      );
+    Duration(seconds: RadarrDatabase.QUEUE_REFRESH_RATE.read()),
+    (_) => fetchQueue(),
+  );
 
   void cancelQueueTimer() => _getQueueTimer?.cancel();
 

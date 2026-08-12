@@ -4,9 +4,7 @@ import 'package:lunasea/modules/radarr.dart';
 import 'package:lunasea/router/routes/settings.dart';
 
 class ConfigurationRadarrRoute extends StatefulWidget {
-  const ConfigurationRadarrRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationRadarrRoute({Key? key}) : super(key: key);
 
   @override
   State<ConfigurationRadarrRoute> createState() => _State();
@@ -54,14 +52,41 @@ class _State extends State<ConfigurationRadarrRoute>
         title: 'settings.EnableModule'.tr(args: [LunaModule.RADARR.title]),
         trailing: LunaSwitch(
           value: LunaProfile.current.radarrEnabled,
-          onChanged: (value) {
-            LunaProfile.current.radarrEnabled = value;
-            LunaProfile.current.save();
-            context.read<RadarrState>().reset();
-          },
+          onChanged: (value) => _setEnabled(value),
         ),
       ),
     );
+  }
+
+  void _setEnabled(bool value) {
+    final profile = LunaProfile.current;
+    if (value && !LunaConnectionDetails.isValidHost(profile.radarrHost)) {
+      profile.radarrEnabled = false;
+      profile.save();
+      showLunaErrorSnackBar(
+        title: 'settings.HostRequired'.tr(),
+        message: 'settings.HostRequiredMessage'.tr(
+          args: [LunaModule.RADARR.title],
+        ),
+      );
+      SettingsRoutes.CONFIGURATION_RADARR_CONNECTION_DETAILS.go();
+      return;
+    }
+    if (value && !LunaConnectionDetails.hasApiKey(profile.radarrKey)) {
+      profile.radarrEnabled = false;
+      profile.save();
+      showLunaErrorSnackBar(
+        title: 'settings.ApiKeyRequired'.tr(),
+        message: 'settings.ApiKeyRequiredMessage'.tr(
+          args: [LunaModule.RADARR.title],
+        ),
+      );
+      SettingsRoutes.CONFIGURATION_RADARR_CONNECTION_DETAILS.go();
+      return;
+    }
+    profile.radarrEnabled = value;
+    profile.save();
+    context.read<RadarrState>().reset();
   }
 
   Widget _connectionDetailsPage() {
@@ -125,8 +150,9 @@ class _State extends State<ConfigurationRadarrRoute>
         ],
         trailing: const LunaIconButton(icon: Icons.queue_play_next_rounded),
         onTap: () async {
-          Tuple2<bool, int> result =
-              await RadarrDialogs().setQueuePageSize(context);
+          Tuple2<bool, int> result = await RadarrDialogs().setQueuePageSize(
+            context,
+          );
           if (result.item1) _db.update(result.item2);
         },
       ),

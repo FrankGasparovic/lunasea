@@ -584,6 +584,8 @@
     "settings.SystemStatus": "Estado de sistema",
     "settings.RenamedProfile": "Perfil renombrado",
     "settings.SortDirection": "Ordenar Dirección",
+    "settings.InvalidApiKey": "Invalid API Key",
+    "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again.",
     "sonarr.AddedOn": "Añadido",
     "sonarr.AddedTag": "Etiqueta añadida",
     "sonarr.AddSeries": "Añadir serie",

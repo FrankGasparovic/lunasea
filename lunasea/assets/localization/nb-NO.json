@@ -340,6 +340,8 @@
     "settings.HeaderKey": "Hode-nøkkel",
     "settings.HeaderKeyValidation": "Hodenøkkel påkrevd",
     "settings.Email": "E-post",
+    "settings.InvalidApiKey": "Invalid API Key",
+    "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again.",
     "tautulli.ETA": "Estimert tid igjen",
     "tautulli.Throttled": "Strupet",
     "tautulli.TerminationAttachMessage": "Du kan alternativt legge ved en avsluttingsmelding nedenfor.",

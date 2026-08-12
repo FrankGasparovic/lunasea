@@ -2,6 +2,7 @@ library sonarr;
 
 import 'package:dio/dio.dart';
 import 'package:lunasea/api/sonarr/controllers.dart';
+import 'package:lunasea/utils/connection.dart';
 
 class SonarrAPI {
   SonarrAPI._internal({
@@ -30,12 +31,15 @@ class SonarrAPI {
     bool followRedirects = true,
     int maxRedirects = 5,
   }) {
+    if (!LunaConnectionDetails.isReady(host: host, apiKey: apiKey)) {
+      throw ArgumentError(
+        'A valid HTTP(S) host and nonempty API key are required.',
+      );
+    }
     Dio _dio = Dio(
       BaseOptions(
         baseUrl: host.endsWith('/') ? '${host}api/v3/' : '$host/api/v3/',
-        queryParameters: {
-          'apikey': apiKey,
-        },
+        queryParameters: {'apikey': apiKey},
         contentType: Headers.jsonContentType,
         responseType: ResponseType.json,
         headers: headers,
@@ -63,9 +67,7 @@ class SonarrAPI {
     );
   }
 
-  factory SonarrAPI.from({
-    required Dio client,
-  }) {
+  factory SonarrAPI.from({required Dio client}) {
     return SonarrAPI._internal(
       httpClient: client,
       calendar: SonarrControllerCalendar(client),

@@ -280,5 +280,7 @@
     "settings.Class": "Klasse",
     "settings.ClearImageCacheDescription": "Bilder aus dem permanenten Speicher löschen",
     "settings.Device": "Gerät",
-    "settings.Exception": "Ausnahme"
+    "settings.Exception": "Ausnahme",
+    "settings.InvalidApiKey": "Invalid API Key",
+    "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again."
 }

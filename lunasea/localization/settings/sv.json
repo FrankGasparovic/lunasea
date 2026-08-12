@@ -114,5 +114,7 @@
   "settings.AddModuleFailed": "Misslyckades med att lägga till modul",
   "settings.AddModule": "Lägg till modul",
   "settings.AccountDescription": "Ditt LunaSea Konto",
-  "settings.Account": "Konto"
+  "settings.Account": "Konto",
+  "settings.InvalidApiKey": "Invalid API Key",
+  "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again."
 }

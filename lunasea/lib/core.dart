@@ -8,6 +8,7 @@ export 'database/models/profile.dart';
 export 'database/tables/lunasea.dart';
 export 'system/logger.dart';
 export 'utils/dialogs.dart';
+export 'utils/connection.dart';
 export 'widgets/ui.dart';
 export 'modules.dart';
 export 'vendor.dart'

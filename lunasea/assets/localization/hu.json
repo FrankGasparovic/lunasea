@@ -594,6 +594,8 @@
     "settings.Platform": "Platform adatai",
     "settings.UpToDate": "Naprakész",
     "settings.Version": "Verzió",
+    "settings.InvalidApiKey": "Invalid API Key",
+    "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again.",
     "sonarr.ManySeasons": "{} Évad",
     "sonarr.AddReleaseToBlocklist": "Adja hozzá a kiadást a tiltólistához",
     "sonarr.CheckDownloadClient": "További részletekért ellenőrizze a letöltési klienst",

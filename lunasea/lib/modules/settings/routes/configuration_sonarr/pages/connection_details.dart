@@ -5,9 +5,7 @@ import 'package:lunasea/modules/sonarr.dart';
 import 'package:lunasea/router/routes/settings.dart';
 
 class ConfigurationSonarrConnectionDetailsRoute extends StatefulWidget {
-  const ConfigurationSonarrConnectionDetailsRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationSonarrConnectionDetailsRoute({Key? key}) : super(key: key);
 
   @override
   State<ConfigurationSonarrConnectionDetailsRoute> createState() => _State();
@@ -35,22 +33,14 @@ class _State extends State<ConfigurationSonarrConnectionDetailsRoute>
   }
 
   Widget _bottomActionBar() {
-    return LunaBottomActionBar(
-      actions: [
-        _testConnection(),
-      ],
-    );
+    return LunaBottomActionBar(actions: [_testConnection()]);
   }
 
   Widget _body() {
     return LunaBox.profiles.listenableBuilder(
       builder: (context, _) => LunaListView(
         controller: scrollController,
-        children: [
-          _host(),
-          _apiKey(),
-          _customHeaders(),
-        ],
+        children: [_host(), _apiKey(), _customHeaders()],
       ),
     );
   }
@@ -108,45 +98,57 @@ class _State extends State<ConfigurationSonarrConnectionDetailsRoute>
       icon: LunaIcons.CONNECTION_TEST,
       onTap: () async {
         LunaProfile _profile = LunaProfile.current;
-        if (_profile.sonarrHost.isEmpty) {
+        if (!LunaConnectionDetails.isValidHost(_profile.sonarrHost)) {
           showLunaErrorSnackBar(
             title: 'settings.HostRequired'.tr(),
-            message: 'settings.HostRequiredMessage'
-                .tr(args: [LunaModule.SONARR.title]),
+            message: 'settings.HostRequiredMessage'.tr(
+              args: [LunaModule.SONARR.title],
+            ),
           );
           return;
         }
-        if (_profile.sonarrKey.isEmpty) {
+        if (!LunaConnectionDetails.hasApiKey(_profile.sonarrKey)) {
           showLunaErrorSnackBar(
             title: 'settings.ApiKeyRequired'.tr(),
-            message: 'settings.ApiKeyRequiredMessage'
-                .tr(args: [LunaModule.SONARR.title]),
+            message: 'settings.ApiKeyRequiredMessage'.tr(
+              args: [LunaModule.SONARR.title],
+            ),
           );
           return;
         }
         SonarrAPI(
-          host: _profile.sonarrHost,
-          apiKey: _profile.sonarrKey,
-          headers: Map<String, dynamic>.from(
-            _profile.sonarrHeaders,
-          ),
-        ).system.getStatus().then((_) {
-          showLunaSuccessSnackBar(
-            title: 'settings.ConnectedSuccessfully'.tr(),
-            message: 'settings.ConnectedSuccessfullyMessage'
-                .tr(args: [LunaModule.SONARR.title]),
-          );
-        }).catchError((error, trace) {
-          LunaLogger().error(
-            'Connection Test Failed',
-            error,
-            trace,
-          );
-          showLunaErrorSnackBar(
-            title: 'settings.ConnectionTestFailed'.tr(),
-            error: error,
-          );
-        });
+              host: _profile.sonarrHost,
+              apiKey: _profile.sonarrKey,
+              headers: Map<String, dynamic>.from(_profile.sonarrHeaders),
+            ).system
+            .getStatus()
+            .then((_) {
+              showLunaSuccessSnackBar(
+                title: 'settings.ConnectedSuccessfully'.tr(),
+                message: 'settings.ConnectedSuccessfullyMessage'.tr(
+                  args: [LunaModule.SONARR.title],
+                ),
+              );
+            })
+            .catchError((error, trace) {
+              LunaLogger().error('Connection Test Failed', error, trace);
+              showLunaErrorSnackBar(
+                title:
+                    error is DioException && error.response?.statusCode == 401
+                    ? 'settings.InvalidApiKey'.tr()
+                    : 'settings.ConnectionTestFailed'.tr(),
+                message:
+                    error is DioException && error.response?.statusCode == 401
+                    ? 'settings.InvalidApiKeyMessage'.tr(
+                        args: [LunaModule.SONARR.title],
+                      )
+                    : null,
+                error:
+                    error is DioException && error.response?.statusCode == 401
+                    ? null
+                    : error,
+              );
+            });
       },
     );
   }

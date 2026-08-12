@@ -494,6 +494,8 @@
     "settings.User": "Usuário",
     "settings.AllLogs": "Todos os Registros",
     "settings.GeneralDescription": "Customizar LunaSea",
+    "settings.InvalidApiKey": "Invalid API Key",
+    "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again.",
     "sonarr.AddedTag": "Tag Adicionada",
     "sonarr.AddSeries": "Adicionar Série",
     "sonarr.DeleteFile": "Apagar Ficheiro",

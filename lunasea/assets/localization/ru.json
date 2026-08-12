@@ -153,6 +153,8 @@
     "settings.AccountHelp": "Аккаунт LunaSea",
     "settings.AccountDescription": "Ваш аккаунт в LunaSea",
     "settings.Account": "Аккаунт",
+    "settings.InvalidApiKey": "Invalid API Key",
+    "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again.",
     "sonarr.AddedOn": "Добавлено на",
     "sonarr.AddedSeries": "Добавленны серии",
     "sonarr.AddedTag": "Добавить Тег",

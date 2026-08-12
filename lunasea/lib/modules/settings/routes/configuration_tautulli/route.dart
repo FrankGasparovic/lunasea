@@ -4,9 +4,7 @@ import 'package:lunasea/modules/tautulli.dart';
 import 'package:lunasea/router/routes/settings.dart';
 
 class ConfigurationTautulliRoute extends StatefulWidget {
-  const ConfigurationTautulliRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationTautulliRoute({Key? key}) : super(key: key);
 
   @override
   State<ConfigurationTautulliRoute> createState() => _State();
@@ -54,14 +52,41 @@ class _State extends State<ConfigurationTautulliRoute>
         title: 'settings.EnableModule'.tr(args: [LunaModule.TAUTULLI.title]),
         trailing: LunaSwitch(
           value: LunaProfile.current.tautulliEnabled,
-          onChanged: (value) {
-            LunaProfile.current.tautulliEnabled = value;
-            LunaProfile.current.save();
-            context.read<TautulliState>().reset();
-          },
+          onChanged: (value) => _setEnabled(value),
         ),
       ),
     );
+  }
+
+  void _setEnabled(bool value) {
+    final profile = LunaProfile.current;
+    if (value && !LunaConnectionDetails.isValidHost(profile.tautulliHost)) {
+      profile.tautulliEnabled = false;
+      profile.save();
+      showLunaErrorSnackBar(
+        title: 'settings.HostRequired'.tr(),
+        message: 'settings.HostRequiredMessage'.tr(
+          args: [LunaModule.TAUTULLI.title],
+        ),
+      );
+      SettingsRoutes.CONFIGURATION_TAUTULLI_CONNECTION_DETAILS.go();
+      return;
+    }
+    if (value && !LunaConnectionDetails.hasApiKey(profile.tautulliKey)) {
+      profile.tautulliEnabled = false;
+      profile.save();
+      showLunaErrorSnackBar(
+        title: 'settings.ApiKeyRequired'.tr(),
+        message: 'settings.ApiKeyRequiredMessage'.tr(
+          args: [LunaModule.TAUTULLI.title],
+        ),
+      );
+      SettingsRoutes.CONFIGURATION_TAUTULLI_CONNECTION_DETAILS.go();
+      return;
+    }
+    profile.tautulliEnabled = value;
+    profile.save();
+    context.read<TautulliState>().reset();
   }
 
   Widget _connectionDetailsPage() {
@@ -111,20 +136,24 @@ class _State extends State<ConfigurationTautulliRoute>
 
   Widget _activityRefreshRate() {
     const _db = TautulliDatabase.REFRESH_RATE;
-    return _db.listenableBuilder(builder: (context, _) {
-      String refreshRate = _db.read() == 1
-          ? 'lunasea.EverySecond'.tr()
-          : 'lunasea.EverySeconds'.tr(args: [_db.read().toString()]);
-      return LunaBlock(
-        title: 'tautulli.ActivityRefreshRate'.tr(),
-        body: [TextSpan(text: refreshRate)],
-        trailing: const LunaIconButton(icon: LunaIcons.REFRESH),
-        onTap: () async {
-          List<dynamic> _values = await TautulliDialogs.setRefreshRate(context);
-          if (_values[0]) _db.update(_values[1]);
-        },
-      );
-    });
+    return _db.listenableBuilder(
+      builder: (context, _) {
+        String refreshRate = _db.read() == 1
+            ? 'lunasea.EverySecond'.tr()
+            : 'lunasea.EverySeconds'.tr(args: [_db.read().toString()]);
+        return LunaBlock(
+          title: 'tautulli.ActivityRefreshRate'.tr(),
+          body: [TextSpan(text: refreshRate)],
+          trailing: const LunaIconButton(icon: LunaIcons.REFRESH),
+          onTap: () async {
+            List<dynamic> _values = await TautulliDialogs.setRefreshRate(
+              context,
+            );
+            if (_values[0]) _db.update(_values[1]);
+          },
+        );
+      },
+    );
   }
 
   Widget _statisticsItemCount() {

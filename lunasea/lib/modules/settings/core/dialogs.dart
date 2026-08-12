@@ -8,6 +8,7 @@ import 'package:lunasea/modules/dashboard/core/adapters/calendar_starting_size.d
 import 'package:lunasea/modules/dashboard/core/adapters/calendar_starting_type.dart';
 import 'package:lunasea/modules/settings/core/types/header.dart';
 import 'package:lunasea/system/state.dart';
+import 'package:lunasea/utils/connection.dart';
 import 'package:lunasea/utils/validator.dart';
 import 'package:lunasea/vendor.dart';
 import 'package:lunasea/widgets/ui.dart';
@@ -64,9 +65,7 @@ class SettingsDialogs {
           onPressed: () => _setValues(true),
         ),
       ],
-      content: [
-        LunaDialog.textContent(text: 'settings.SignOutHint1'.tr()),
-      ],
+      content: [LunaDialog.textContent(text: 'settings.SignOutHint1'.tr())],
       contentPadding: LunaDialog.textDialogContentPadding(),
     );
     return _flag;
@@ -127,9 +126,7 @@ class SettingsDialogs {
             validator: (value) {
               // Allow empty value
               if (value?.isEmpty ?? true) return null;
-              // Test for https:// or http://
-              RegExp exp = RegExp(r"^(http|https)://", caseSensitive: false);
-              if (exp.hasMatch(value!)) return null;
+              if (LunaConnectionDetails.isValidHost(value!)) return null;
               return 'settings.HostValidation'.tr();
             },
           ),
@@ -191,9 +188,7 @@ class SettingsDialogs {
             validator: (value) {
               // Allow empty value
               if (value?.isEmpty ?? true) return null;
-              // Test for https:// or http://
-              RegExp exp = RegExp(r"^(http|https)://", caseSensitive: false);
-              if (exp.hasMatch(value!)) return null;
+              if (LunaConnectionDetails.isValidHost(value!)) return null;
               return 'settings.HostValidation'.tr();
             },
           ),
@@ -453,9 +448,7 @@ class SettingsDialogs {
           textColor: LunaColours.red,
         ),
       ],
-      content: [
-        LunaDialog.textContent(text: 'settings.ClearLogsHint1'.tr()),
-      ],
+      content: [LunaDialog.textContent(text: 'settings.ClearLogsHint1'.tr())],
       contentPadding: LunaDialog.textDialogContentPadding(),
     );
     return _flag;
@@ -739,9 +732,10 @@ class SettingsDialogs {
       title: 'settings.RenameProfile'.tr(),
       buttons: [
         LunaDialog.button(
-            text: 'lunasea.Rename'.tr(),
-            onPressed: () => _setValues(true),
-            textColor: LunaColours.accent),
+          text: 'lunasea.Rename'.tr(),
+          onPressed: () => _setValues(true),
+          textColor: LunaColours.accent,
+        ),
       ],
       content: [
         Form(
@@ -1266,10 +1260,9 @@ class SettingsDialogs {
             validator: (value) {
               int? _opacity = int.tryParse(value!);
               if (_opacity == null || _opacity < 0 || _opacity > 100)
-                return 'settings.MustBeValueBetween'.tr(args: [
-                  0.toString(),
-                  100.toString(),
-                ]);
+                return 'settings.MustBeValueBetween'.tr(
+                  args: [0.toString(), 100.toString()],
+                );
               return null;
             },
           ),

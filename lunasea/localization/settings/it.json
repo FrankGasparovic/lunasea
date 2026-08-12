@@ -79,5 +79,7 @@
     "settings.AddModule": "Aggiungi modulo",
     "settings.AddHeader": "Aggiungi intestazione",
     "settings.AccountHelpHint1": "LunaSea offre un account gratuito per il backup della tua configurazione nel cloud, con ulteriori funzionalità in arrivo in futuro!",
-    "settings.AccountHelp": "Account LunaSea"
+    "settings.AccountHelp": "Account LunaSea",
+    "settings.InvalidApiKey": "Invalid API Key",
+    "settings.InvalidApiKeyMessage": "The API key for {} is invalid. Please verify it and try again."
 }

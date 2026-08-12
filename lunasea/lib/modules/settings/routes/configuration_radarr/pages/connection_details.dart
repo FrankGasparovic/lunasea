@@ -5,9 +5,7 @@ import 'package:lunasea/modules/settings.dart';
 import 'package:lunasea/router/routes/settings.dart';
 
 class ConfigurationRadarrConnectionDetailsRoute extends StatefulWidget {
-  const ConfigurationRadarrConnectionDetailsRoute({
-    Key? key,
-  }) : super(key: key);
+  const ConfigurationRadarrConnectionDetailsRoute({Key? key}) : super(key: key);
 
   @override
   State<ConfigurationRadarrConnectionDetailsRoute> createState() => _State();
@@ -35,22 +33,14 @@ class _State extends State<ConfigurationRadarrConnectionDetailsRoute>
   }
 
   Widget _bottomActionBar() {
-    return LunaBottomActionBar(
-      actions: [
-        _testConnection(),
-      ],
-    );
+    return LunaBottomActionBar(actions: [_testConnection()]);
   }
 
   Widget _body() {
     return LunaBox.profiles.listenableBuilder(
       builder: (context, _) => LunaListView(
         controller: scrollController,
-        children: [
-          _host(),
-          _apiKey(),
-          _customHeaders(),
-        ],
+        children: [_host(), _apiKey(), _customHeaders()],
       ),
     );
   }
@@ -108,49 +98,57 @@ class _State extends State<ConfigurationRadarrConnectionDetailsRoute>
       icon: LunaIcons.CONNECTION_TEST,
       onTap: () async {
         LunaProfile _profile = LunaProfile.current;
-        if (_profile.radarrHost.isEmpty) {
+        if (!LunaConnectionDetails.isValidHost(_profile.radarrHost)) {
           showLunaErrorSnackBar(
             title: 'settings.HostRequired'.tr(),
-            message: 'settings.HostRequiredMessage'
-                .tr(args: [LunaModule.RADARR.title]),
+            message: 'settings.HostRequiredMessage'.tr(
+              args: [LunaModule.RADARR.title],
+            ),
           );
           return;
         }
-        if (_profile.radarrKey.isEmpty) {
+        if (!LunaConnectionDetails.hasApiKey(_profile.radarrKey)) {
           showLunaErrorSnackBar(
             title: 'settings.ApiKeyRequired'.tr(),
-            message: 'settings.ApiKeyRequiredMessage'
-                .tr(args: [LunaModule.RADARR.title]),
+            message: 'settings.ApiKeyRequiredMessage'.tr(
+              args: [LunaModule.RADARR.title],
+            ),
           );
           return;
         }
         RadarrAPI(
-          host: _profile.radarrHost,
-          apiKey: _profile.radarrKey,
-          headers: Map<String, dynamic>.from(_profile.radarrHeaders),
-        )
-            .system
+              host: _profile.radarrHost,
+              apiKey: _profile.radarrKey,
+              headers: Map<String, dynamic>.from(_profile.radarrHeaders),
+            ).system
             .status()
             .then(
               (_) => showLunaSuccessSnackBar(
                 title: 'settings.ConnectedSuccessfully'.tr(),
-                message: 'settings.ConnectedSuccessfullyMessage'
-                    .tr(args: [LunaModule.RADARR.title]),
+                message: 'settings.ConnectedSuccessfullyMessage'.tr(
+                  args: [LunaModule.RADARR.title],
+                ),
               ),
             )
-            .catchError(
-          (error, trace) {
-            LunaLogger().error(
-              'Connection Test Failed',
-              error,
-              trace,
-            );
-            showLunaErrorSnackBar(
-              title: 'settings.ConnectionTestFailed'.tr(),
-              error: error,
-            );
-          },
-        );
+            .catchError((error, trace) {
+              LunaLogger().error('Connection Test Failed', error, trace);
+              showLunaErrorSnackBar(
+                title:
+                    error is DioException && error.response?.statusCode == 401
+                    ? 'settings.InvalidApiKey'.tr()
+                    : 'settings.ConnectionTestFailed'.tr(),
+                message:
+                    error is DioException && error.response?.statusCode == 401
+                    ? 'settings.InvalidApiKeyMessage'.tr(
+                        args: [LunaModule.RADARR.title],
+                      )
+                    : null,
+                error:
+                    error is DioException && error.response?.statusCode == 401
+                    ? null
+                    : error,
+              );
+            });
       },
     );
   }
