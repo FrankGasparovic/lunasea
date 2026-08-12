@@ -194,14 +194,17 @@ class _State extends State<SonarrQueueTile> {
             );
           },
         ),
-      // if (widget.queueRecord.status == SonarrQueueStatus.COMPLETED &&
-      //     widget.queueRecord?.trackedDownloadStatus ==
-      //         SonarrTrackedDownloadStatus.WARNING)
-      //   LunaButton.text(
-      //     icon: Icons.download_done_rounded,
-      //     text: 'sonarr.Import'.tr(),
-      //     onTap: () async {},
-      //   ),
+      if (widget.queueRecord.status == SonarrQueueStatus.COMPLETED &&
+          widget.queueRecord.trackedDownloadStatus ==
+              SonarrTrackedDownloadStatus.WARNING &&
+          (widget.queueRecord.outputPath ?? '').isNotEmpty)
+        LunaButton.text(
+          icon: Icons.download_done_rounded,
+          text: 'sonarr.Import'.tr(),
+          onTap: () => SonarrRoutes.MANUAL_IMPORT_DETAILS.go(
+            queryParams: {'path': widget.queueRecord.outputPath!},
+          ),
+        ),
       LunaButton.text(
         icon: Icons.delete_rounded,
         color: LunaColours.red,
