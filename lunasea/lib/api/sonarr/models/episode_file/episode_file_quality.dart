@@ -12,10 +12,7 @@ class SonarrEpisodeFileQuality {
   @JsonKey(name: 'revision')
   SonarrEpisodeFileQualityRevision? revision;
 
-  SonarrEpisodeFileQuality({
-    this.quality,
-    this.revision,
-  });
+  SonarrEpisodeFileQuality({this.quality, this.revision});
 
   @override
   String toString() => json.encode(this.toJson());

@@ -7,10 +7,7 @@ Future<SonarrAddedRelease> _commandAddRelease(
 }) async {
   Response response = await client.post(
     'release',
-    data: {
-      'guid': guid,
-      'indexerId': indexerId,
-    },
+    data: {'guid': guid, 'indexerId': indexerId},
   );
   return SonarrAddedRelease.fromJson(response.data);
 }

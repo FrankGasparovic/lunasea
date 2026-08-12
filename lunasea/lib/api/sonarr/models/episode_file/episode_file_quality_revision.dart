@@ -14,18 +14,14 @@ class SonarrEpisodeFileQualityRevision {
   @JsonKey(name: 'isRepack')
   bool? isRepack;
 
-  SonarrEpisodeFileQualityRevision({
-    this.version,
-    this.real,
-    this.isRepack,
-  });
+  SonarrEpisodeFileQualityRevision({this.version, this.real, this.isRepack});
 
   @override
   String toString() => json.encode(this.toJson());
 
   factory SonarrEpisodeFileQualityRevision.fromJson(
-          Map<String, dynamic> json) =>
-      _$SonarrEpisodeFileQualityRevisionFromJson(json);
+    Map<String, dynamic> json,
+  ) => _$SonarrEpisodeFileQualityRevisionFromJson(json);
   Map<String, dynamic> toJson() =>
       _$SonarrEpisodeFileQualityRevisionToJson(this);
 }

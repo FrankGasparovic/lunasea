@@ -1,9 +1,6 @@
 part of sonarr_types;
 
-enum SonarrWantedMissingSortKey {
-  AIRDATE_UTC,
-  SERIES_TITLE,
-}
+enum SonarrWantedMissingSortKey { AIRDATE_UTC, SERIES_TITLE }
 
 /// Extension on [SonarrWantedMissingSortKey] to implement extended functionality.
 extension SonarrWantedMissingSortKeyExtension on SonarrWantedMissingSortKey {

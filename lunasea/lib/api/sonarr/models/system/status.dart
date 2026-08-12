@@ -13,9 +13,10 @@ class SonarrStatus {
 
   /// [DateTime] object representing the build time
   @JsonKey(
-      name: 'buildTime',
-      fromJson: SonarrUtilities.dateTimeFromJson,
-      toJson: SonarrUtilities.dateTimeToJson)
+    name: 'buildTime',
+    fromJson: SonarrUtilities.dateTimeFromJson,
+    toJson: SonarrUtilities.dateTimeToJson,
+  )
   DateTime? buildTime;
 
   /// Is debug version?

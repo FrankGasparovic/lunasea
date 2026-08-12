@@ -20,17 +20,16 @@ class SonarrControllerQueue {
     SonarrQueueSortKey? sortKey,
     int? page,
     int? pageSize,
-  }) async =>
-      _commandGetQueue(
-        _client,
-        includeUnknownSeriesItems: includeUnknownSeriesItems,
-        includeEpisode: includeEpisode,
-        includeSeries: includeSeries,
-        sortDirection: sortDirection,
-        sortKey: sortKey,
-        page: page,
-        pageSize: pageSize,
-      );
+  }) async => _commandGetQueue(
+    _client,
+    includeUnknownSeriesItems: includeUnknownSeriesItems,
+    includeEpisode: includeEpisode,
+    includeSeries: includeSeries,
+    sortDirection: sortDirection,
+    sortKey: sortKey,
+    page: page,
+    pageSize: pageSize,
+  );
 
   /// Handler for [queue/details](https://github.com/Sonarr/Sonarr/wiki/Queue#get).
   ///
@@ -40,14 +39,13 @@ class SonarrControllerQueue {
     List<int>? episodeIds,
     bool? includeSeries,
     bool? includeEpisode,
-  }) async =>
-      _commandGetQueueDetails(
-        _client,
-        seriesId: seriesId,
-        episodeIds: episodeIds,
-        includeSeries: includeSeries,
-        includeEpisode: includeEpisode,
-      );
+  }) async => _commandGetQueueDetails(
+    _client,
+    seriesId: seriesId,
+    episodeIds: episodeIds,
+    includeSeries: includeSeries,
+    includeEpisode: includeEpisode,
+  );
 
   /// Handler for [queue](https://github.com/Sonarr/Sonarr/wiki/Queue#delete).
   ///
@@ -56,11 +54,10 @@ class SonarrControllerQueue {
     required int id,
     bool? removeFromClient,
     bool? blocklist,
-  }) async =>
-      _commandDeleteQueue(
-        _client,
-        id: id,
-        blocklist: blocklist,
-        removeFromClient: removeFromClient,
-      );
+  }) async => _commandDeleteQueue(
+    _client,
+    id: id,
+    blocklist: blocklist,
+    removeFromClient: removeFromClient,
+  );
 }

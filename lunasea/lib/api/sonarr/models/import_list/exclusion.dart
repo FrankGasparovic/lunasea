@@ -14,11 +14,7 @@ class SonarrExclusion {
   @JsonKey(name: 'title')
   String? title;
 
-  SonarrExclusion({
-    this.id,
-    this.tvdbId,
-    this.title,
-  });
+  SonarrExclusion({this.id, this.tvdbId, this.title});
 
   @override
   String toString() => json.encode(this.toJson());

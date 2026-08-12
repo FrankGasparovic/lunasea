@@ -11,10 +11,7 @@ class SonarrTag {
   @JsonKey(name: 'label')
   String? label;
 
-  SonarrTag({
-    this.id,
-    this.label,
-  });
+  SonarrTag({this.id, this.label});
 
   @override
   String toString() => json.encode(this.toJson());

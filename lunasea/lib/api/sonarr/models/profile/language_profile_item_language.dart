@@ -14,10 +14,7 @@ class SonarrLanguageProfileItemLanguage {
   @JsonKey(name: 'name')
   String? name;
 
-  SonarrLanguageProfileItemLanguage({
-    this.id,
-    this.name,
-  });
+  SonarrLanguageProfileItemLanguage({this.id, this.name});
 
   /// Returns a JSON-encoded string version of this object.
   @override
@@ -25,8 +22,8 @@ class SonarrLanguageProfileItemLanguage {
 
   /// Deserialize a JSON map to a [SonarrLanguageProfileItemLanguage] object.
   factory SonarrLanguageProfileItemLanguage.fromJson(
-          Map<String, dynamic> json) =>
-      _$SonarrLanguageProfileItemLanguageFromJson(json);
+    Map<String, dynamic> json,
+  ) => _$SonarrLanguageProfileItemLanguageFromJson(json);
 
   /// Serialize a [SonarrLanguageProfileItemLanguage] object to a JSON map.
   Map<String, dynamic> toJson() =>

@@ -1,10 +1,6 @@
 part of sonarr_types;
 
-enum SonarrTrackedDownloadStatus {
-  OK,
-  WARNING,
-  ERROR,
-}
+enum SonarrTrackedDownloadStatus { OK, WARNING, ERROR }
 
 extension SonarrTrackedDownloadStatusExtension on SonarrTrackedDownloadStatus {
   SonarrTrackedDownloadStatus? from(String? type) {

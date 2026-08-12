@@ -6,8 +6,11 @@ Future<void> _commandDeleteQueue(
   bool? removeFromClient,
   bool? blocklist,
 }) async {
-  await client.delete('queue/$id', queryParameters: {
-    if (removeFromClient != null) 'removeFromClient': removeFromClient,
-    if (blocklist != null) 'blocklist': blocklist,
-  });
+  await client.delete(
+    'queue/$id',
+    queryParameters: {
+      if (removeFromClient != null) 'removeFromClient': removeFromClient,
+      if (blocklist != null) 'blocklist': blocklist,
+    },
+  );
 }

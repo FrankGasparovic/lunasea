@@ -14,11 +14,7 @@ class SonarrImage {
   @JsonKey(name: 'remoteUrl')
   String? remoteUrl;
 
-  SonarrImage({
-    this.coverType,
-    this.url,
-    this.remoteUrl,
-  });
+  SonarrImage({this.coverType, this.url, this.remoteUrl});
 
   @override
   String toString() => json.encode(this.toJson());

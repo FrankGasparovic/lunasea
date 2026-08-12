@@ -1,9 +1,6 @@
 part of sonarr_types;
 
-enum SonarrProtocol {
-  USENET,
-  TORRENT,
-}
+enum SonarrProtocol { USENET, TORRENT }
 
 extension SonarrProtocolExtension on SonarrProtocol {
   SonarrProtocol? from(String? type) {

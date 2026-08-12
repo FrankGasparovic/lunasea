@@ -1,10 +1,6 @@
 part of sonarr_types;
 
-enum SonarrSeriesType {
-  STANDARD,
-  DAILY,
-  ANIME,
-}
+enum SonarrSeriesType { STANDARD, DAILY, ANIME }
 
 extension SonarrSeriesTypeExtension on SonarrSeriesType {
   SonarrSeriesType? from(String? type) {

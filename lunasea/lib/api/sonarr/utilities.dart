@@ -54,16 +54,16 @@ class SonarrUtilities {
   static String? queueStatusToJson(SonarrQueueStatus? status) => status?.value;
 
   static SonarrTrackedDownloadState? queueTrackedDownloadStateFromJson(
-          String? state) =>
-      SonarrTrackedDownloadState.DOWNLOADING.from(state);
+    String? state,
+  ) => SonarrTrackedDownloadState.DOWNLOADING.from(state);
   static String? queueTrackedDownloadStateToJson(
-          SonarrTrackedDownloadState? state) =>
-      state?.value;
+    SonarrTrackedDownloadState? state,
+  ) => state?.value;
 
   static SonarrTrackedDownloadStatus? queueTrackedDownloadStatusFromJson(
-          String? status) =>
-      SonarrTrackedDownloadStatus.OK.from(status);
+    String? status,
+  ) => SonarrTrackedDownloadStatus.OK.from(status);
   static String? queueTrackedDownloadStatusToJson(
-          SonarrTrackedDownloadStatus? status) =>
-      status?.value;
+    SonarrTrackedDownloadStatus? status,
+  ) => status?.value;
 }

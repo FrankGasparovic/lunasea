@@ -1,9 +1,6 @@
 part of sonarr_types;
 
-enum SonarrSortDirection {
-  ASCENDING,
-  DESCENDING,
-}
+enum SonarrSortDirection { ASCENDING, DESCENDING }
 
 /// Extension on [SonarrSortDirection] to implement extended functionality.
 extension SonarrSortDirectionExtension on SonarrSortDirection {

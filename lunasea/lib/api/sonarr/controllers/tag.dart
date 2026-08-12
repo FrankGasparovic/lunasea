@@ -12,25 +12,19 @@ class SonarrControllerTag {
   /// Handler for [tag](https://github.com/Sonarr/Sonarr/wiki/Tag#post).
   ///
   /// Adds a new tag.
-  Future<SonarrTag> create({
-    required String label,
-  }) async =>
+  Future<SonarrTag> create({required String label}) async =>
       _commandAddTag(_client, label: label);
 
   /// Handler for [tag/{id}](https://github.com/Sonarr/Sonarr/wiki/Tag#deleteid).
   ///
   /// Delete the tag with the given ID.
-  Future<void> delete({
-    required int id,
-  }) async =>
+  Future<void> delete({required int id}) async =>
       _commandDeleteTag(_client, id: id);
 
   /// Handler for [tag/{id}](https://github.com/Sonarr/Sonarr/wiki/Tag#getid).
   ///
   /// Returns the tag with the matching ID.
-  Future<SonarrTag> get({
-    required int id,
-  }) async =>
+  Future<SonarrTag> get({required int id}) async =>
       _commandGetTag(_client, id: id);
 
   /// Handler for [tag](https://github.com/Sonarr/Sonarr/wiki/Tag#get).
@@ -41,8 +35,6 @@ class SonarrControllerTag {
   /// Handler for [tag](https://github.com/Sonarr/Sonarr/wiki/Tag#put).
   ///
   /// Update an existing tag.
-  Future<SonarrTag> update({
-    required SonarrTag tag,
-  }) async =>
+  Future<SonarrTag> update({required SonarrTag tag}) async =>
       _commandUpdateTag(_client, tag: tag);
 }

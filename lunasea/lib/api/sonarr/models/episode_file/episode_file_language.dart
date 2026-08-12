@@ -11,10 +11,7 @@ class SonarrEpisodeFileLanguage {
   @JsonKey(name: 'name')
   String? name;
 
-  SonarrEpisodeFileLanguage({
-    this.id,
-    this.name,
-  });
+  SonarrEpisodeFileLanguage({this.id, this.name});
 
   @override
   String toString() => json.encode(this.toJson());

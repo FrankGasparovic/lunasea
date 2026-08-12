@@ -14,10 +14,7 @@ class SonarrLanguageProfileCutoff {
   @JsonKey(name: 'name')
   String? name;
 
-  SonarrLanguageProfileCutoff({
-    this.id,
-    this.name,
-  });
+  SonarrLanguageProfileCutoff({this.id, this.name});
 
   /// Returns a JSON-encoded string version of this object.
   @override

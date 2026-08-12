@@ -1,9 +1,6 @@
 part of sonarr_types;
 
-enum SonarrHistorySortKey {
-  DATE,
-  SERIES_TITLE,
-}
+enum SonarrHistorySortKey { DATE, SERIES_TITLE }
 
 /// Extension on [SonarrHistorySortKey] to implement extended functionality.
 extension SonarrHistorySortKeyExtension on SonarrHistorySortKey {

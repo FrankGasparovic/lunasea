@@ -28,16 +28,18 @@ class SonarrCommand {
 
   /// [DateTime] that the command was queued
   @JsonKey(
-      name: 'queued',
-      toJson: SonarrUtilities.dateTimeToJson,
-      fromJson: SonarrUtilities.dateTimeFromJson)
+    name: 'queued',
+    toJson: SonarrUtilities.dateTimeToJson,
+    fromJson: SonarrUtilities.dateTimeFromJson,
+  )
   DateTime? queued;
 
   /// [DateTime] that the command was started
   @JsonKey(
-      name: 'started',
-      toJson: SonarrUtilities.dateTimeToJson,
-      fromJson: SonarrUtilities.dateTimeFromJson)
+    name: 'started',
+    toJson: SonarrUtilities.dateTimeToJson,
+    fromJson: SonarrUtilities.dateTimeFromJson,
+  )
   DateTime? started;
 
   /// Method that triggered the command
@@ -54,16 +56,18 @@ class SonarrCommand {
 
   /// [DateTime] that the command was started on
   @JsonKey(
-      name: 'startedOn',
-      toJson: SonarrUtilities.dateTimeToJson,
-      fromJson: SonarrUtilities.dateTimeFromJson)
+    name: 'startedOn',
+    toJson: SonarrUtilities.dateTimeToJson,
+    fromJson: SonarrUtilities.dateTimeFromJson,
+  )
   DateTime? startedOn;
 
   /// [DateTime] that the command state was changed at
   @JsonKey(
-      name: 'stateChangeTime',
-      toJson: SonarrUtilities.dateTimeToJson,
-      fromJson: SonarrUtilities.dateTimeFromJson)
+    name: 'stateChangeTime',
+    toJson: SonarrUtilities.dateTimeToJson,
+    fromJson: SonarrUtilities.dateTimeFromJson,
+  )
   DateTime? stateChangeTime;
 
   /// Will updates be sent to the client for this command?

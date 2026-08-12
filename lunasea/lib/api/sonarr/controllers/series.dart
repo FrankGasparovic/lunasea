@@ -24,20 +24,19 @@ class SonarrControllerSeries {
     bool searchForMissingEpisodes = false,
     bool searchForCutoffUnmetEpisodes = false,
     bool includeSeasonImages = false,
-  }) async =>
-      _commandAddSeries(
-        _client,
-        series: series,
-        seriesType: seriesType,
-        seasonFolder: seasonFolder,
-        qualityProfile: qualityProfile,
-        languageProfile: languageProfile,
-        rootFolder: rootFolder,
-        monitorType: monitorType,
-        tags: tags,
-        searchForMissingEpisodes: searchForMissingEpisodes,
-        searchForCutoffUnmetEpisodes: searchForCutoffUnmetEpisodes,
-      );
+  }) async => _commandAddSeries(
+    _client,
+    series: series,
+    seriesType: seriesType,
+    seasonFolder: seasonFolder,
+    qualityProfile: qualityProfile,
+    languageProfile: languageProfile,
+    rootFolder: rootFolder,
+    monitorType: monitorType,
+    tags: tags,
+    searchForMissingEpisodes: searchForMissingEpisodes,
+    searchForCutoffUnmetEpisodes: searchForCutoffUnmetEpisodes,
+  );
 
   /// Handler for [series/{id}](https://github.com/Sonarr/Sonarr/wiki/Series#deleteid).
   ///
@@ -46,13 +45,12 @@ class SonarrControllerSeries {
     required int seriesId,
     bool deleteFiles = false,
     bool addImportListExclusion = false,
-  }) async =>
-      _commandDeleteSeries(
-        _client,
-        seriesId: seriesId,
-        deleteFiles: deleteFiles,
-        addImportListExclusion: addImportListExclusion,
-      );
+  }) async => _commandDeleteSeries(
+    _client,
+    seriesId: seriesId,
+    deleteFiles: deleteFiles,
+    addImportListExclusion: addImportListExclusion,
+  );
 
   /// Handler for [series/{id}](https://github.com/Sonarr/Sonarr/wiki/Series#getid).
   ///
@@ -60,32 +58,21 @@ class SonarrControllerSeries {
   Future<SonarrSeries> get({
     required int seriesId,
     bool includeSeasonImages = false,
-  }) async =>
-      _commandGetSeries(
-        _client,
-        seriesId: seriesId,
-        includeSeasonImages: includeSeasonImages,
-      );
+  }) async => _commandGetSeries(
+    _client,
+    seriesId: seriesId,
+    includeSeasonImages: includeSeasonImages,
+  );
 
   /// Handler for [series](https://github.com/Sonarr/Sonarr/wiki/Series#get).
   ///
   /// Returns a list of all series.
-  Future<List<SonarrSeries>> getAll({
-    bool includeSeasonImages = false,
-  }) async =>
-      _commandGetAllSeries(
-        _client,
-        includeSeasonImages: includeSeasonImages,
-      );
+  Future<List<SonarrSeries>> getAll({bool includeSeasonImages = false}) async =>
+      _commandGetAllSeries(_client, includeSeasonImages: includeSeasonImages);
 
   /// Handler for [series]https://github.com/Sonarr/Sonarr/wiki/Series#put).
   ///
   /// Update an existing series.
-  Future<SonarrSeries> update({
-    required SonarrSeries series,
-  }) async =>
-      _commandUpdateSeries(
-        _client,
-        series: series,
-      );
+  Future<SonarrSeries> update({required SonarrSeries series}) async =>
+      _commandUpdateSeries(_client, series: series);
 }

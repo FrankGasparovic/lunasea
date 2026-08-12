@@ -25,9 +25,10 @@ class SonarrMissingRecord {
   String? airDate;
 
   @JsonKey(
-      name: 'airDateUtc',
-      toJson: SonarrUtilities.dateTimeToJson,
-      fromJson: SonarrUtilities.dateTimeFromJson)
+    name: 'airDateUtc',
+    toJson: SonarrUtilities.dateTimeToJson,
+    fromJson: SonarrUtilities.dateTimeFromJson,
+  )
   DateTime? airDateUtc;
 
   @JsonKey(name: 'overview')

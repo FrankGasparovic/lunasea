@@ -17,9 +17,10 @@ class SonarrMissing {
 
   /// Key used to sort the results
   @JsonKey(
-      name: 'sortKey',
-      toJson: SonarrUtilities.wantedMissingSortKeyToJson,
-      fromJson: SonarrUtilities.wantedMissingSortKeyFromJson)
+    name: 'sortKey',
+    toJson: SonarrUtilities.wantedMissingSortKeyToJson,
+    fromJson: SonarrUtilities.wantedMissingSortKeyFromJson,
+  )
   SonarrWantedMissingSortKey? sortKey;
 
   /// Direction that the results were sorted

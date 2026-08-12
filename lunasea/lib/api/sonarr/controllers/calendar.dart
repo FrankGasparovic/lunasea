@@ -20,14 +20,13 @@ class SonarrControllerCalendar {
     bool? includeSeries,
     bool? includeEpisodeFile,
     bool? includeEpisodeImages,
-  }) async =>
-      _commandGetCalendar(
-        _client,
-        start: start,
-        end: end,
-        unmonitored: unmonitored,
-        includeSeries: includeSeries,
-        includeEpisodeFile: includeEpisodeFile,
-        includeEpisodeImages: includeEpisodeImages,
-      );
+  }) async => _commandGetCalendar(
+    _client,
+    start: start,
+    end: end,
+    unmonitored: unmonitored,
+    includeSeries: includeSeries,
+    includeEpisodeFile: includeEpisodeFile,
+    includeEpisodeImages: includeEpisodeImages,
+  );
 }

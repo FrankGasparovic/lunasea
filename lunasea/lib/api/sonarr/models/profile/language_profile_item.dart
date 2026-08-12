@@ -14,9 +14,7 @@ class SonarrLanguageProfileItem {
   @JsonKey(name: 'language')
   SonarrLanguageProfileItemLanguage? language;
 
-  SonarrLanguageProfileItem({
-    this.allowed,
-  });
+  SonarrLanguageProfileItem({this.allowed});
 
   /// Returns a JSON-encoded string version of this object.
   @override

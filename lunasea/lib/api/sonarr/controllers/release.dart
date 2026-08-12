@@ -12,9 +12,7 @@ class SonarrControllerRelease {
   /// Handler for [release](https://github.com/Sonarr/Sonarr/wiki/Release#get).
   ///
   /// Returns the a list of releases for the episode.
-  Future<List<SonarrRelease>> get({
-    required int episodeId,
-  }) async =>
+  Future<List<SonarrRelease>> get({required int episodeId}) async =>
       _commandGetReleases(_client, episodeId: episodeId);
 
   /// Handler for [release](https://github.com/Sonarr/Sonarr/wiki/Release#get).
@@ -23,9 +21,11 @@ class SonarrControllerRelease {
   Future<List<SonarrRelease>> getSeasonPack({
     required int seriesId,
     required int seasonNumber,
-  }) async =>
-      _commandGetSeasonReleases(_client,
-          seriesId: seriesId, seasonNumber: seasonNumber);
+  }) async => _commandGetSeasonReleases(
+    _client,
+    seriesId: seriesId,
+    seasonNumber: seasonNumber,
+  );
 
   /// Handler for [release](https://github.com/Sonarr/Sonarr/wiki/Release#post).
   ///
@@ -34,6 +34,5 @@ class SonarrControllerRelease {
   Future<SonarrAddedRelease> add({
     required String guid,
     required int indexerId,
-  }) async =>
-      _commandAddRelease(_client, guid: guid, indexerId: indexerId);
+  }) async => _commandAddRelease(_client, guid: guid, indexerId: indexerId);
 }

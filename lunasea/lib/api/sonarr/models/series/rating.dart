@@ -14,10 +14,7 @@ class SonarrSeriesRating {
   @JsonKey(name: 'value')
   double? value;
 
-  SonarrSeriesRating({
-    this.votes,
-    this.value,
-  });
+  SonarrSeriesRating({this.votes, this.value});
 
   /// Returns a JSON-encoded string version of this object.
   @override

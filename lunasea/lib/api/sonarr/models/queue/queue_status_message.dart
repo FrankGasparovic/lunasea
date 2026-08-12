@@ -11,10 +11,7 @@ class SonarrQueueStatusMessage {
   @JsonKey(name: 'messages')
   List<String>? messages;
 
-  SonarrQueueStatusMessage({
-    this.title,
-    this.messages,
-  });
+  SonarrQueueStatusMessage({this.title, this.messages});
 
   /// Returns a JSON-encoded string version of this object.
   @override

@@ -15,15 +15,11 @@ class SonarrControllerEpisodeFile {
   ///
   /// Required Parameters:
   /// - `episodeFileId`: Episode ID for the episode to fetch
-  Future<void> delete({
-    required int episodeFileId,
-  }) async =>
+  Future<void> delete({required int episodeFileId}) async =>
       _commandDeleteEpisodeFile(_client, episodeFileId: episodeFileId);
 
   /// Delete the given episode files.
-  Future<void> deleteBulk({
-    required List<int> episodeFileIds,
-  }) async =>
+  Future<void> deleteBulk({required List<int> episodeFileIds}) async =>
       _commandDeleteEpisodeFiles(_client, episodeFileIds: episodeFileIds);
 
   /// Handler for [episodefile/{id}](https://github.com/Sonarr/Sonarr/wiki/EpisodeFile#get).
@@ -32,9 +28,7 @@ class SonarrControllerEpisodeFile {
   ///
   /// Required Parameters:
   /// - `episodeId`: Episode ID for the episode to fetch
-  Future<SonarrEpisodeFile> get({
-    required int episodeId,
-  }) async =>
+  Future<SonarrEpisodeFile> get({required int episodeId}) async =>
       _commandGetEpisodeFile(_client, episodeId: episodeId);
 
   /// Handler for [episodefile?seriesid={id}](https://github.com/Sonarr/Sonarr/wiki/EpisodeFile#getid).
@@ -43,8 +37,6 @@ class SonarrControllerEpisodeFile {
   ///
   /// Required Parameters:
   /// - `seriesId`: Series ID for which to fetch episodes for
-  Future<List<SonarrEpisodeFile>> getSeries({
-    required int seriesId,
-  }) async =>
+  Future<List<SonarrEpisodeFile>> getSeries({required int seriesId}) async =>
       _commandGetSeriesEpisodeFiles(_client, seriesId: seriesId);
 }

@@ -6,8 +6,11 @@ Future<void> _commandDeleteSeries(
   bool deleteFiles = false,
   bool addImportListExclusion = false,
 }) async {
-  await client.delete('series/$seriesId', queryParameters: {
-    'deleteFiles': deleteFiles,
-    'addImportListExclusion': addImportListExclusion,
-  });
+  await client.delete(
+    'series/$seriesId',
+    queryParameters: {
+      'deleteFiles': deleteFiles,
+      'addImportListExclusion': addImportListExclusion,
+    },
+  );
 }

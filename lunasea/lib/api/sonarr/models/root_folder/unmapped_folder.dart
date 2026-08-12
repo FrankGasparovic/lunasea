@@ -14,10 +14,7 @@ class SonarrUnmappedFolder {
   @JsonKey(name: 'path')
   String? path;
 
-  SonarrUnmappedFolder({
-    this.name,
-    this.path,
-  });
+  SonarrUnmappedFolder({this.name, this.path});
 
   /// Returns a JSON-encoded string version of this object.
   @override

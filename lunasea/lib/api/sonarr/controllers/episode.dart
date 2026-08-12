@@ -18,37 +18,26 @@ class SonarrControllerEpisode {
     List<int>? episodeIds,
     int? episodeFileId,
     bool? includeImages,
-  }) async =>
-      _commandGetEpisodes(
-        _client,
-        seriesId: seriesId,
-        seasonNumber: seasonNumber,
-        episodeIds: episodeIds,
-        episodeFileId: episodeFileId,
-        includeImages: includeImages,
-      );
+  }) async => _commandGetEpisodes(
+    _client,
+    seriesId: seriesId,
+    seasonNumber: seasonNumber,
+    episodeIds: episodeIds,
+    episodeFileId: episodeFileId,
+    includeImages: includeImages,
+  );
 
   /// Handler for [episode/{id}](https://github.com/Sonarr/Sonarr/wiki/Episode#getid).
   ///
   /// Returns the episode with the matching ID.
-  Future<SonarrEpisode> get({
-    required int episodeId,
-  }) async =>
-      _commandGetEpisode(
-        _client,
-        episodeId: episodeId,
-      );
+  Future<SonarrEpisode> get({required int episodeId}) async =>
+      _commandGetEpisode(_client, episodeId: episodeId);
 
   /// Handler for [episode](https://github.com/Sonarr/Sonarr/wiki/Episode#put).
   ///
   /// Update the given episode, currently only monitored is changed, all other modifications are ignored.
-  Future<SonarrEpisode> update({
-    required SonarrEpisode episode,
-  }) async =>
-      _commandUpdateEpisode(
-        _client,
-        episode: episode,
-      );
+  Future<SonarrEpisode> update({required SonarrEpisode episode}) async =>
+      _commandUpdateEpisode(_client, episode: episode);
 
   /// Handler for `episode/monitor`.
   ///
@@ -56,10 +45,9 @@ class SonarrControllerEpisode {
   Future<List<SonarrEpisode>> setMonitored({
     required List<int> episodeIds,
     required bool monitored,
-  }) async =>
-      _commandEpisodeSetMonitored(
-        _client,
-        episodeIds: episodeIds,
-        monitored: monitored,
-      );
+  }) async => _commandEpisodeSetMonitored(
+    _client,
+    episodeIds: episodeIds,
+    monitored: monitored,
+  );
 }

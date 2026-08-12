@@ -65,9 +65,10 @@ class SonarrAddedRelease {
 
   /// [DateTime] object for when the release was published
   @JsonKey(
-      name: 'publishDate',
-      fromJson: SonarrUtilities.dateTimeFromJson,
-      toJson: SonarrUtilities.dateTimeToJson)
+    name: 'publishDate',
+    fromJson: SonarrUtilities.dateTimeFromJson,
+    toJson: SonarrUtilities.dateTimeToJson,
+  )
   DateTime? publishDate;
 
   /// Is the download allowed?

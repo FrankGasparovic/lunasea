@@ -25,14 +25,13 @@ class SonarrControllerWanted {
     int? pageSize,
     bool? includeSeries,
     bool? includeImages,
-  }) async =>
-      _commandGetMissing(
-        _client,
-        sortDirection: sortDir,
-        sortKey: sortKey,
-        page: page,
-        pageSize: pageSize,
-        includeSeries: includeSeries,
-        includeImages: includeImages,
-      );
+  }) async => _commandGetMissing(
+    _client,
+    sortDirection: sortDir,
+    sortKey: sortKey,
+    page: page,
+    pageSize: pageSize,
+    includeSeries: includeSeries,
+    includeImages: includeImages,
+  );
 }

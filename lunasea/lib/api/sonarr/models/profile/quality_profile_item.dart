@@ -12,10 +12,7 @@ class SonarrQualityProfileItem {
   @JsonKey(name: 'quality')
   SonarrQualityProfileItemQuality? quality;
 
-  SonarrQualityProfileItem({
-    this.allowed,
-    this.quality,
-  });
+  SonarrQualityProfileItem({this.allowed, this.quality});
 
   @override
   String toString() => json.encode(this.toJson());
