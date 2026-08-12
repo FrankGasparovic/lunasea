@@ -25,7 +25,7 @@
     "generate:build_runner:watch": "dart run build_runner watch --delete-conflicting-outputs",
     "generate:environment": "dart run environment_config:generate",
     "generate:localization": "dart ./scripts/generate_localization.dart",
-    "prepare": "husky install && npm run git:ignore && flutter pub get",
+    "prepare": "cd .. && husky lunasea/.husky && cd lunasea && flutter pub get",
     "prepare:keychain": "npm run prepare:keychain:ios && npm run prepare:keychain:macos",
     "prepare:keychain:ios": "cd ios && bundle exec fastlane keychain_create && bundle exec fastlane keychain_setup",
     "prepare:keychain:macos": "cd macos && bundle exec fastlane keychain_create && bundle exec fastlane keychain_setup",
@@ -40,12 +40,12 @@
     "version:snapcraft": "yq -i \".version = \\\"$(jq -r .version package.json)\\\"\" snap/snapcraft.yaml"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.7.1",
-    "@commitlint/config-conventional": "^17.7.0",
-    "commitizen": "^4.3.0",
-    "cross-env": "^7.0.3",
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
+    "commitizen": "^4.3.2",
+    "cross-env": "^10.1.0",
     "cz-conventional-changelog": "^3.3.0",
-    "husky": "^8.0.3",
+    "husky": "^9.1.7",
     "standard-version": "^9.5.0"
   }
 }

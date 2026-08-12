@@ -15,13 +15,17 @@ class SearchIndexerRoute extends StatefulWidget {
 class _State extends State<SearchIndexerRoute> with LunaScrollControllerMixin {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _refreshKey = GlobalKey<RefreshIndicatorState>();
-  final PagingController<int, NewznabResultData> _pagingController =
-      PagingController(firstPageKey: 0);
+  late final PagingController<int, NewznabResultData> _pagingController;
   bool _firstSearched = false;
 
   @override
   void initState() {
     super.initState();
+    _pagingController = PagingController(
+      getNextPageKey: (state) =>
+          state.lastPageIsEmpty ? null : (state.keys?.last ?? -1) + 1,
+      fetchPage: _fetchPage,
+    );
     context.read<SearchState>().resetQuery();
   }
 
@@ -40,27 +44,24 @@ class _State extends State<SearchIndexerRoute> with LunaScrollControllerMixin {
     if (mounted) setState(() => _firstSearched = true);
   }
 
-  Future<void> _fetchPage(int pageKey) async {
+  Future<List<NewznabResultData>> _fetchPage(int pageKey) async {
     SearchState state = context.read<SearchState>();
     NewznabCategoryData? category = state.activeCategory;
     NewznabSubcategoryData? subcategory = state.activeSubcategory;
-    await state.api
-        .getResults(
-      categoryId: subcategory?.id ?? category?.id,
-      query: state.searchQuery,
-      offset: pageKey,
-    )
-        .then((data) {
-      if (data.isEmpty) return _pagingController.appendLastPage([]);
-      return _pagingController.appendPage(data, pageKey + 1);
-    }).catchError((error, stack) {
+    try {
+      return await state.api.getResults(
+        categoryId: subcategory?.id ?? category?.id,
+        query: state.searchQuery,
+        offset: pageKey,
+      );
+    } catch (error, stack) {
       LunaLogger().error(
         'Unable to fetch search results page: $pageKey',
         error,
         stack,
       );
-      _pagingController.error = error;
-    });
+      rethrow;
+    }
   }
 
   Widget _appBar() {
@@ -91,7 +92,6 @@ class _State extends State<SearchIndexerRoute> with LunaScrollControllerMixin {
         refreshKey: _refreshKey,
         pagingController: _pagingController,
         scrollController: scrollController,
-        listener: _fetchPage,
         noItemsFoundMessage: 'search.NoResultsFound'.tr(),
         itemBuilder: (context, result, index) => SearchResultTile(data: result),
       );
