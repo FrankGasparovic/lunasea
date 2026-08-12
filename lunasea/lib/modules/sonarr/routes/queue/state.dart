@@ -3,51 +3,55 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/sonarr.dart';
 
 class SonarrQueueState extends ChangeNotifier {
-  SonarrQueueState(BuildContext context) {
-    fetchQueue(context);
+  SonarrQueueState(this._sonarr) {
+    fetchQueue();
   }
 
+  final SonarrState _sonarr;
   Timer? _timer;
+  bool _disposed = false;
+
   void cancelTimer() => _timer?.cancel();
-  void createTimer(BuildContext context) {
+  void createTimer() {
     _timer = Timer.periodic(
       Duration(seconds: SonarrDatabase.QUEUE_REFRESH_RATE.read()),
-      (_) => fetchQueue(context),
+      (_) => fetchQueue(),
     );
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    cancelTimer();
+    super.dispose();
   }
 
   late Future<SonarrQueuePage> _queue;
   Future<SonarrQueuePage> get queue => _queue;
   set queue(Future<SonarrQueuePage> queue) {
-    this.queue = queue;
+    _queue = queue;
     notifyListeners();
   }
 
-  Future<void> fetchQueue(
-    BuildContext context, {
-    bool hardCheck = false,
-  }) async {
+  Future<void> fetchQueue({bool hardCheck = false}) async {
     cancelTimer();
-    if (context.read<SonarrState>().enabled) {
+    final api = _sonarr.api;
+    if (_sonarr.enabled && api != null) {
       if (hardCheck) {
         // "Hard" check by telling Sonarr to refresh the monitored downloads
         // Give it 500 ms to internally check and then continue to fetch queue
-        await context
-            .read<SonarrState>()
-            .api!
-            .command
-            .refreshMonitoredDownloads()
-            .then(
-              (_) => Future.delayed(const Duration(milliseconds: 500), () {}),
-            );
+        await api.command.refreshMonitoredDownloads().then(
+          (_) => Future.delayed(const Duration(milliseconds: 500), () {}),
+        );
       }
-      _queue = context.read<SonarrState>().api!.queue.get(
-            includeEpisode: true,
-            includeSeries: true,
-            pageSize: SonarrDatabase.QUEUE_PAGE_SIZE.read(),
-          );
-      createTimer(context);
+      if (_disposed || !_sonarr.enabled || _sonarr.api != api) return;
+      _queue = api.queue.get(
+        includeEpisode: true,
+        includeSeries: true,
+        pageSize: SonarrDatabase.QUEUE_PAGE_SIZE.read(),
+      );
+      createTimer();
     }
-    notifyListeners();
+    if (!_disposed) notifyListeners();
   }
 }

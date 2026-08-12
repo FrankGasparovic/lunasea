@@ -50,6 +50,6 @@ enum SonarrEpisodeMultiSettingsType {
         break;
     }
 
-    context.read<SonarrSeasonDetailsState>().fetchState(context);
+    context.read<SonarrSeasonDetailsState>().fetchState();
   }
 }

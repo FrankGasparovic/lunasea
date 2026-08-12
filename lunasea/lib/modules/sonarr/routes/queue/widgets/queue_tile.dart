@@ -5,10 +5,7 @@ import 'package:lunasea/extensions/string/string.dart';
 import 'package:lunasea/modules/sonarr.dart';
 import 'package:lunasea/router/routes/sonarr.dart';
 
-enum SonarrQueueTileType {
-  ALL,
-  EPISODE,
-}
+enum SonarrQueueTileType { ALL, EPISODE }
 
 class SonarrQueueTile extends StatefulWidget {
   final SonarrQueueRecord queueRecord;
@@ -46,9 +43,9 @@ class _State extends State<SonarrQueueTile> {
   Future<void> _onLongPress() async {
     switch (widget.type) {
       case SonarrQueueTileType.ALL:
-        SonarrRoutes.SERIES.go(params: {
-          'series': widget.queueRecord.seriesId!.toString(),
-        });
+        SonarrRoutes.SERIES.go(
+          params: {'series': widget.queueRecord.seriesId!.toString()},
+        );
         break;
       case SonarrQueueTileType.EPISODE:
         SonarrRoutes.QUEUE.go();
@@ -57,12 +54,9 @@ class _State extends State<SonarrQueueTile> {
   }
 
   Widget _collapsedTrailing() {
-    Tuple3<String, IconData, Color> _status =
-        widget.queueRecord.lunaStatusParameters();
-    return LunaIconButton(
-      icon: _status.item2,
-      color: _status.item3,
-    );
+    Tuple3<String, IconData, Color> _status = widget.queueRecord
+        .lunaStatusParameters();
+    return LunaIconButton(icon: _status.item2, color: _status.item3);
   }
 
   TextSpan _subtitle1() {
@@ -75,12 +69,15 @@ class _State extends State<SonarrQueueTile> {
     return TextSpan(
       children: [
         TextSpan(
-            text: widget.queueRecord.episode?.lunaSeasonEpisode() ??
-                LunaUI.TEXT_EMDASH),
+          text:
+              widget.queueRecord.episode?.lunaSeasonEpisode() ??
+              LunaUI.TEXT_EMDASH,
+        ),
         const TextSpan(text: ': '),
         TextSpan(
-            text: widget.queueRecord.episode!.title ?? LunaUI.TEXT_EMDASH,
-            style: const TextStyle(fontStyle: FontStyle.italic)),
+          text: widget.queueRecord.episode!.title ?? LunaUI.TEXT_EMDASH,
+          style: const TextStyle(fontStyle: FontStyle.italic),
+        ),
       ],
     );
   }
@@ -98,16 +95,14 @@ class _State extends State<SonarrQueueTile> {
           ),
         if (widget.queueRecord.language != null)
           TextSpan(text: LunaUI.TEXT_BULLET.pad()),
-        TextSpan(
-          text: widget.queueRecord.lunaTimeLeft(),
-        ),
+        TextSpan(text: widget.queueRecord.lunaTimeLeft()),
       ],
     );
   }
 
   TextSpan _subtitle4() {
-    Tuple3<String, IconData, Color> _params =
-        widget.queueRecord.lunaStatusParameters(canBeWhite: false);
+    Tuple3<String, IconData, Color> _params = widget.queueRecord
+        .lunaStatusParameters(canBeWhite: false);
     return TextSpan(
       style: TextStyle(
         color: _params.item3,
@@ -122,8 +117,8 @@ class _State extends State<SonarrQueueTile> {
   }
 
   List<LunaHighlightedNode> _expandedHighlightedNodes() {
-    Tuple3<String, IconData, Color> _status =
-        widget.queueRecord.lunaStatusParameters(canBeWhite: false);
+    Tuple3<String, IconData, Color> _status = widget.queueRecord
+        .lunaStatusParameters(canBeWhite: false);
     return [
       LunaHighlightedNode(
         text: widget.queueRecord.protocol!.lunaReadable(),
@@ -150,7 +145,8 @@ class _State extends State<SonarrQueueTile> {
       if (widget.type == SonarrQueueTileType.ALL)
         LunaTableContent(
           title: 'sonarr.Episode'.tr(),
-          body: widget.queueRecord.episode?.lunaSeasonEpisode() ??
+          body:
+              widget.queueRecord.episode?.lunaSeasonEpisode() ??
               LunaUI.TEXT_EMDASH,
         ),
       if (widget.type == SonarrQueueTileType.ALL)
@@ -215,26 +211,24 @@ class _State extends State<SonarrQueueTile> {
           if (result) {
             SonarrAPIController()
                 .removeFromQueue(
-              context: context,
-              queueRecord: widget.queueRecord,
-            )
+                  context: context,
+                  queueRecord: widget.queueRecord,
+                )
                 .then((_) {
-              switch (widget.type) {
-                case SonarrQueueTileType.ALL:
-                  context.read<SonarrQueueState>().fetchQueue(
-                        context,
+                  switch (widget.type) {
+                    case SonarrQueueTileType.ALL:
+                      context.read<SonarrQueueState>().fetchQueue(
                         hardCheck: true,
                       );
-                  break;
-                case SonarrQueueTileType.EPISODE:
-                  context.read<SonarrSeasonDetailsState>().fetchState(
-                        context,
+                      break;
+                    case SonarrQueueTileType.EPISODE:
+                      context.read<SonarrSeasonDetailsState>().fetchState(
                         shouldFetchEpisodes: false,
                         shouldFetchFiles: false,
                       );
-                  break;
-              }
-            });
+                      break;
+                  }
+                });
           }
         },
       ),

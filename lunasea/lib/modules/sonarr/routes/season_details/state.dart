@@ -4,21 +4,22 @@ import 'package:lunasea/modules/sonarr.dart';
 import 'package:lunasea/system/cache/memory/memory_cache.dart';
 
 class SonarrSeasonDetailsState extends ChangeNotifier {
+  final SonarrState _sonarr;
   final int seriesId;
   final int? seasonNumber;
   int _currentQueueItems = 0;
   int? currentEpisodeId;
+  bool _disposed = false;
 
   SonarrSeasonDetailsState({
-    required BuildContext context,
+    required SonarrState sonarr,
     required this.seriesId,
     required this.seasonNumber,
-  }) {
-    fetchState(context, queueHardCheck: false);
+  }) : _sonarr = sonarr {
+    fetchState(queueHardCheck: false);
   }
 
-  Future<void> fetchState(
-    BuildContext context, {
+  Future<void> fetchState({
     bool shouldFetchEpisodes = true,
     bool shouldFetchFiles = true,
     bool shouldFetchHistory = true,
@@ -26,16 +27,18 @@ class SonarrSeasonDetailsState extends ChangeNotifier {
     bool queueHardCheck = true,
     bool shouldFetchMostRecentEpisodeHistory = true,
   }) async {
-    if (shouldFetchEpisodes) fetchEpisodes(context);
-    if (shouldFetchFiles) fetchFiles(context);
-    if (shouldFetchHistory) fetchHistory(context);
-    if (shouldFetchQueue) fetchQueue(context, hardCheck: queueHardCheck);
+    if (_disposed) return;
+    if (shouldFetchEpisodes) fetchEpisodes();
+    if (shouldFetchFiles) fetchFiles();
+    if (shouldFetchHistory) fetchHistory();
+    if (shouldFetchQueue) fetchQueue(hardCheck: queueHardCheck);
     if (shouldFetchMostRecentEpisodeHistory)
-      fetchEpisodeHistory(context, currentEpisodeId);
+      fetchEpisodeHistory(currentEpisodeId);
   }
 
   @override
   void dispose() {
+    _disposed = true;
     _queueTimer?.cancel();
     super.dispose();
   }
@@ -53,14 +56,11 @@ class SonarrSeasonDetailsState extends ChangeNotifier {
     id: 'episode_history_cache',
   );
 
-  Future<void> fetchEpisodeHistory(BuildContext context, int? episodeId) async {
-    if (context.read<SonarrState>().enabled) {
+  Future<void> fetchEpisodeHistory(int? episodeId) async {
+    if (_sonarr.enabled && _sonarr.api != null) {
       _episodeHistoryCache.put(
         episodeId.toString(),
-        context.read<SonarrState>().api!.history.get(
-              pageSize: 1000,
-              episodeId: episodeId,
-            ),
+        _sonarr.api!.history.get(pageSize: 1000, episodeId: episodeId),
       );
     }
     notifyListeners();
@@ -73,18 +73,13 @@ class SonarrSeasonDetailsState extends ChangeNotifier {
 
   Future<Map<int, SonarrEpisode>>? _episodes;
   Future<Map<int, SonarrEpisode>>? get episodes => _episodes;
-  Future<void> fetchEpisodes(BuildContext context) async {
-    if (context.read<SonarrState>().enabled) {
-      _episodes = context
-          .read<SonarrState>()
-          .api!
-          .episode
+  Future<void> fetchEpisodes() async {
+    if (_sonarr.enabled && _sonarr.api != null) {
+      _episodes = _sonarr.api!.episode
           .getMulti(seriesId: seriesId, seasonNumber: seasonNumber)
           .then((episodes) {
-        return {
-          for (SonarrEpisode e in episodes) e.id!: e,
-        };
-      });
+            return {for (SonarrEpisode e in episodes) e.id!: e};
+          });
     }
     notifyListeners();
   }
@@ -96,30 +91,25 @@ class SonarrSeasonDetailsState extends ChangeNotifier {
 
   Future<List<SonarrHistoryRecord>>? _history;
   Future<List<SonarrHistoryRecord>>? get history => _history;
-  Future<void> fetchHistory(BuildContext context) async {
+  Future<void> fetchHistory() async {
     if (this.seasonNumber == null) return;
-    if (context.read<SonarrState>().enabled) {
-      _history = context.read<SonarrState>().api!.history.getBySeries(
-            seriesId: seriesId,
-            seasonNumber: seasonNumber,
-          );
+    if (_sonarr.enabled && _sonarr.api != null) {
+      _history = _sonarr.api!.history.getBySeries(
+        seriesId: seriesId,
+        seasonNumber: seasonNumber,
+      );
     }
     notifyListeners();
   }
 
   Future<Map<int, SonarrEpisodeFile>>? _files;
   Future<Map<int, SonarrEpisodeFile>>? get files => _files;
-  Future<void> fetchFiles(BuildContext context) async {
-    if (context.read<SonarrState>().enabled) {
-      _files = context
-          .read<SonarrState>()
-          .api!
-          .episodeFile
-          .getSeries(seriesId: seriesId)
-          .then((files) {
-        return {
-          for (SonarrEpisodeFile f in files) f.id!: f,
-        };
+  Future<void> fetchFiles() async {
+    if (_sonarr.enabled && _sonarr.api != null) {
+      _files = _sonarr.api!.episodeFile.getSeries(seriesId: seriesId).then((
+        files,
+      ) {
+        return {for (SonarrEpisodeFile f in files) f.id!: f};
       });
     }
     notifyListeners();
@@ -127,10 +117,10 @@ class SonarrSeasonDetailsState extends ChangeNotifier {
 
   Timer? _queueTimer;
   void cancelQueueTimer() => _queueTimer?.cancel();
-  void createQueueTimer(BuildContext context) {
+  void createQueueTimer() {
     _queueTimer = Timer.periodic(
       Duration(seconds: SonarrDatabase.QUEUE_REFRESH_RATE.read()),
-      (_) => fetchQueue(context),
+      (_) => fetchQueue(),
     );
   }
 
@@ -141,45 +131,31 @@ class SonarrSeasonDetailsState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchQueue(
-    BuildContext context, {
-    bool hardCheck = false,
-  }) async {
+  Future<void> fetchQueue({bool hardCheck = false}) async {
     cancelQueueTimer();
-    if (context.read<SonarrState>().enabled) {
+    final api = _sonarr.api;
+    if (_sonarr.enabled && api != null) {
       // "Hard" check by telling Sonarr to refresh the monitored downloads
       // Give it 500 ms to internally check and then continue to fetch queue
       if (hardCheck) {
-        await context
-            .read<SonarrState>()
-            .api!
-            .command
-            .refreshMonitoredDownloads()
-            .then(
-              (_) => Future.delayed(const Duration(milliseconds: 500), () {}),
-            );
+        await api.command.refreshMonitoredDownloads().then(
+          (_) => Future.delayed(const Duration(milliseconds: 500), () {}),
+        );
       }
-      _queue = context
-          .read<SonarrState>()
-          .api!
-          .queue
-          .getDetails(
-            seriesId: seriesId,
-            includeEpisode: true,
-          )
+      if (_disposed || !_sonarr.enabled || _sonarr.api != api) return;
+      _queue = api.queue
+          .getDetails(seriesId: seriesId, includeEpisode: true)
           .then((queue) {
-        if (_currentQueueItems != queue.length) {
-          fetchState(
-            context,
-            shouldFetchQueue: false,
-          );
-        }
-        _currentQueueItems = queue.length;
-        return queue;
-      });
-      createQueueTimer(context);
+            if (_disposed) return queue;
+            if (_currentQueueItems != queue.length) {
+              fetchState(shouldFetchQueue: false);
+            }
+            _currentQueueItems = queue.length;
+            return queue;
+          });
+      createQueueTimer();
     }
-    notifyListeners();
+    if (!_disposed) notifyListeners();
   }
 
   final Set<int> selectedEpisodes = {};

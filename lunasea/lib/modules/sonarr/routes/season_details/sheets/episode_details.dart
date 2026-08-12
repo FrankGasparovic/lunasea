@@ -26,7 +26,6 @@ class SonarrEpisodeDetailsSheet extends LunaBottomModalSheet {
     _state.currentEpisodeId = episode!.id;
     _state.episodeSearchState = LunaLoadingState.INACTIVE;
     _state.fetchState(
-      context,
       shouldFetchEpisodes: false,
       shouldFetchFiles: false,
       shouldFetchHistory: false,
@@ -153,9 +152,9 @@ class SonarrEpisodeDetailsSheet extends LunaBottomModalSheet {
             LunaButton.text(
               text: 'sonarr.MediaInfo'.tr(),
               icon: Icons.info_outline_rounded,
-              onTap: () async =>
-                  SonarrMediaInfoSheet(mediaInfo: episodeFile!.mediaInfo)
-                      .show(),
+              onTap: () async => SonarrMediaInfoSheet(
+                mediaInfo: episodeFile!.mediaInfo,
+              ).show(),
             ),
           LunaButton(
             type: LunaButtonType.TEXT,
@@ -166,18 +165,17 @@ class SonarrEpisodeDetailsSheet extends LunaBottomModalSheet {
               if (result) {
                 SonarrAPIController()
                     .deleteEpisode(
-                        context: context,
-                        episode: episode!,
-                        episodeFile: episodeFile!)
+                      context: context,
+                      episode: episode!,
+                      episodeFile: episodeFile!,
+                    )
                     .then((_) {
-                  episode!.hasFile = false;
-                  context
-                      .read<SonarrSeasonDetailsState>()
-                      .fetchHistory(context);
-                  context
-                      .read<SonarrSeasonDetailsState>()
-                      .fetchEpisodeHistory(context, episode!.id);
-                });
+                      episode!.hasFile = false;
+                      context.read<SonarrSeasonDetailsState>().fetchHistory();
+                      context
+                          .read<SonarrSeasonDetailsState>()
+                          .fetchEpisodeHistory(episode!.id);
+                    });
               }
             },
             color: LunaColours.red,
@@ -190,10 +188,12 @@ class SonarrEpisodeDetailsSheet extends LunaBottomModalSheet {
   List<Widget> _queue(BuildContext context) {
     if (queueRecords?.isNotEmpty ?? false) {
       return queueRecords!
-          .map((r) => SonarrQueueTile(
-                queueRecord: r,
-                type: SonarrQueueTileType.EPISODE,
-              ))
+          .map(
+            (r) => SonarrQueueTile(
+              queueRecord: r,
+              type: SonarrQueueTileType.EPISODE,
+            ),
+          )
           .toList();
     }
     return [];
@@ -204,54 +204,53 @@ class SonarrEpisodeDetailsSheet extends LunaBottomModalSheet {
       FutureBuilder(
         future: context
             .select<SonarrSeasonDetailsState, Future<SonarrHistoryPage?>>(
-          (s) => s.getEpisodeHistory(episode!.id!),
-        ),
+              (s) => s.getEpisodeHistory(episode!.id!),
+            ),
         builder:
             (BuildContext context, AsyncSnapshot<SonarrHistoryPage?> snapshot) {
-          if (snapshot.hasError) {
-            if (snapshot.connectionState != ConnectionState.waiting) {
-              LunaLogger().error(
-                'Unable to fetch Sonarr episode history ${episode!.id}',
-                snapshot.error,
-                snapshot.stackTrace,
-              );
-            }
-          }
-          if (snapshot.hasData) {
-            if (snapshot.data!.records!.isEmpty)
-              return Padding(
-                child: LunaMessage.inList(
-                  text: 'sonarr.NoHistoryFound'.tr(),
-                ),
-                padding: const EdgeInsets.only(
-                    bottom: LunaUI.DEFAULT_MARGIN_SIZE / 2),
-              );
-            return Padding(
-              child: Column(
-                children: List.generate(
-                  snapshot.data!.records!.length,
-                  (index) => SonarrHistoryTile(
-                    history: snapshot.data!.records![index],
-                    episode: episode,
-                    type: SonarrHistoryTileType.EPISODE,
+              if (snapshot.hasError) {
+                if (snapshot.connectionState != ConnectionState.waiting) {
+                  LunaLogger().error(
+                    'Unable to fetch Sonarr episode history ${episode!.id}',
+                    snapshot.error,
+                    snapshot.stackTrace,
+                  );
+                }
+              }
+              if (snapshot.hasData) {
+                if (snapshot.data!.records!.isEmpty)
+                  return Padding(
+                    child: LunaMessage.inList(
+                      text: 'sonarr.NoHistoryFound'.tr(),
+                    ),
+                    padding: const EdgeInsets.only(
+                      bottom: LunaUI.DEFAULT_MARGIN_SIZE / 2,
+                    ),
+                  );
+                return Padding(
+                  child: Column(
+                    children: List.generate(
+                      snapshot.data!.records!.length,
+                      (index) => SonarrHistoryTile(
+                        history: snapshot.data!.records![index],
+                        episode: episode,
+                        type: SonarrHistoryTileType.EPISODE,
+                      ),
+                    ),
                   ),
+                  padding: const EdgeInsets.only(
+                    bottom: LunaUI.DEFAULT_MARGIN_SIZE / 2,
+                  ),
+                );
+              }
+              return const Padding(
+                child: LunaLoader(useSafeArea: false, size: 16.0),
+                padding: EdgeInsets.only(
+                  bottom: LunaUI.DEFAULT_MARGIN_SIZE * 1.5,
+                  top: LunaUI.DEFAULT_MARGIN_SIZE,
                 ),
-              ),
-              padding:
-                  const EdgeInsets.only(bottom: LunaUI.DEFAULT_MARGIN_SIZE / 2),
-            );
-          }
-          return const Padding(
-            child: LunaLoader(
-              useSafeArea: false,
-              size: 16.0,
-            ),
-            padding: EdgeInsets.only(
-              bottom: LunaUI.DEFAULT_MARGIN_SIZE * 1.5,
-              top: LunaUI.DEFAULT_MARGIN_SIZE,
-            ),
-          );
-        },
+              );
+            },
       ),
     ];
   }
@@ -260,9 +259,10 @@ class SonarrEpisodeDetailsSheet extends LunaBottomModalSheet {
     return LunaBottomActionBar(
       actions: [
         LunaButton(
-          loadingState:
-              context.select<SonarrSeasonDetailsState, LunaLoadingState>(
-                  (s) => s.episodeSearchState),
+          loadingState: context
+              .select<SonarrSeasonDetailsState, LunaLoadingState>(
+                (s) => s.episodeSearchState,
+              ),
           type: LunaButtonType.TEXT,
           text: 'sonarr.Automatic'.tr(),
           icon: Icons.search_rounded,
@@ -271,23 +271,26 @@ class SonarrEpisodeDetailsSheet extends LunaBottomModalSheet {
                 LunaLoadingState.ACTIVE;
             SonarrAPIController()
                 .episodeSearch(context: context, episode: episode!)
-                .whenComplete(() => context
-                    .read<SonarrSeasonDetailsState>()
-                    .episodeSearchState = LunaLoadingState.INACTIVE);
+                .whenComplete(
+                  () =>
+                      context
+                              .read<SonarrSeasonDetailsState>()
+                              .episodeSearchState =
+                          LunaLoadingState.INACTIVE,
+                );
           },
         ),
         LunaButton.text(
           text: 'sonarr.Interactive'.tr(),
           icon: Icons.person_rounded,
           onTap: () {
-            SonarrRoutes.RELEASES.go(queryParams: {
-              'episode': episode!.id!.toString(),
-            });
+            SonarrRoutes.RELEASES.go(
+              queryParams: {'episode': episode!.id!.toString()},
+            );
             context.read<SonarrSeasonDetailsState>().fetchState(
-                  context,
-                  shouldFetchEpisodes: false,
-                  shouldFetchFiles: false,
-                );
+              shouldFetchEpisodes: false,
+              shouldFetchFiles: false,
+            );
           },
         ),
       ],
@@ -311,8 +314,9 @@ class SonarrEpisodeDetailsSheet extends LunaBottomModalSheet {
               SonarrEpisode? _e =
                   (snapshot.data[0] as Map<int, SonarrEpisode>)[episode!.id!];
               episode = _e;
-              SonarrEpisodeFile? _ef = (snapshot.data[1]
-                  as Map<int, SonarrEpisodeFile>)[episode!.episodeFileId!];
+              SonarrEpisodeFile? _ef =
+                  (snapshot.data[1]
+                      as Map<int, SonarrEpisodeFile>)[episode!.episodeFileId!];
               episodeFile = _ef;
               List<SonarrQueueRecord> _qr =
                   (snapshot.data[2] as List<SonarrQueueRecord>)

@@ -34,8 +34,9 @@ class _State extends State<SeriesSeasonDetailsRoute>
     return LunaScaffold(
       scaffoldKey: _scaffoldKey,
       appBar: _appBar() as PreferredSizeWidget?,
-      bottomNavigationBar:
-          context.watch<SonarrState>().enabled ? _bottomNavigationBar() : null,
+      bottomNavigationBar: context.watch<SonarrState>().enabled
+          ? _bottomNavigationBar()
+          : null,
       body: _body(),
     );
   }
@@ -50,8 +51,9 @@ class _State extends State<SeriesSeasonDetailsRoute>
         _season = 'sonarr.Specials'.tr();
         break;
       default:
-        _season =
-            'sonarr.SeasonNumber'.tr(args: [widget.seasonNumber.toString()]);
+        _season = 'sonarr.SeasonNumber'.tr(
+          args: [widget.seasonNumber.toString()],
+        );
         break;
     }
     return LunaAppBar(
@@ -73,7 +75,7 @@ class _State extends State<SeriesSeasonDetailsRoute>
   Widget _body() {
     return ChangeNotifierProvider(
       create: (context) => SonarrSeasonDetailsState(
-        context: context,
+        sonarr: context.read<SonarrState>(),
         seriesId: widget.seriesId,
         seasonNumber: widget.seasonNumber != -1 ? widget.seasonNumber : null,
       ),

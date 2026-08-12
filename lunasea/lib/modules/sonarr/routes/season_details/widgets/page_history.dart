@@ -3,9 +3,7 @@ import 'package:lunasea/core.dart';
 import 'package:lunasea/modules/sonarr.dart';
 
 class SonarrSeasonDetailsHistoryPage extends StatefulWidget {
-  const SonarrSeasonDetailsHistoryPage({
-    Key? key,
-  }) : super(key: key);
+  const SonarrSeasonDetailsHistoryPage({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _State();
@@ -23,10 +21,7 @@ class _State extends State<SonarrSeasonDetailsHistoryPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return LunaScaffold(
-      scaffoldKey: _scaffoldKey,
-      body: _body(),
-    );
+    return LunaScaffold(scaffoldKey: _scaffoldKey, body: _body());
   }
 
   Widget _body() {
@@ -34,13 +29,17 @@ class _State extends State<SonarrSeasonDetailsHistoryPage>
       context: context,
       key: _refreshKey,
       onRefresh: () async =>
-          context.read<SonarrSeasonDetailsState>().fetchHistory(context),
+          context.read<SonarrSeasonDetailsState>().fetchHistory(),
       child: FutureBuilder(
         future: Future.wait([
-          context.select<SonarrSeasonDetailsState,
-              Future<List<SonarrHistoryRecord>>?>((s) => s.history)!,
-          context.select<SonarrSeasonDetailsState,
-              Future<Map<int?, SonarrEpisode>>?>((s) => s.episodes)!,
+          context.select<
+            SonarrSeasonDetailsState,
+            Future<List<SonarrHistoryRecord>>?
+          >((s) => s.history)!,
+          context.select<
+            SonarrSeasonDetailsState,
+            Future<Map<int?, SonarrEpisode>>?
+          >((s) => s.episodes)!,
         ]),
         builder: (context, AsyncSnapshot<List<Object>> snapshot) {
           if (snapshot.hasError) {
