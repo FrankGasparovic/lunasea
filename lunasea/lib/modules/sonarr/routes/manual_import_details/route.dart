@@ -42,30 +42,44 @@ class SonarrManualImportDetailsRoute extends StatelessWidget {
 
 class _ImportActions extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => LunaBottomActionBar(
-    actions: [
-      LunaButton.text(
-        text:
-            context.watch<SonarrManualImportDetailsState>().importMode ==
-                SonarrImportMode.COPY
-            ? 'sonarr.Copy'.tr()
-            : 'sonarr.Move'.tr(),
-        icon: Icons.drive_file_move_rounded,
-        onTap: () =>
-            context.read<SonarrManualImportDetailsState>().toggleImportMode(),
+  Widget build(BuildContext context) {
+    final state = context.watch<SonarrManualImportDetailsState>();
+    return FutureBuilder<List<SonarrManualImport>>(
+      future: state.imports,
+      builder: (context, snapshot) => LunaBottomActionBar(
+        actions: [
+          LunaButton.text(
+            text: state.areAllValidSelected(snapshot.data ?? [])
+                ? 'sonarr.DeselectAll'.tr()
+                : 'sonarr.SelectAll'.tr(),
+            icon: state.areAllValidSelected(snapshot.data ?? [])
+                ? Icons.deselect_rounded
+                : Icons.select_all_rounded,
+            onTap: snapshot.hasData
+                ? () => state.toggleAll(snapshot.data!)
+                : null,
+          ),
+          LunaButton.text(
+            text: state.importMode == SonarrImportMode.COPY
+                ? 'sonarr.Copy'.tr()
+                : 'sonarr.Move'.tr(),
+            icon: Icons.drive_file_move_rounded,
+            onTap: state.toggleImportMode,
+          ),
+          LunaButton.text(
+            text: 'sonarr.Import'.tr(),
+            icon: Icons.download_done_rounded,
+            onTap: () async {
+              final state = context.read<SonarrManualImportDetailsState>();
+              final imports = await state.imports!;
+              if (await state.submit(context, imports) && context.mounted)
+                Navigator.of(context).pop();
+            },
+          ),
+        ],
       ),
-      LunaButton.text(
-        text: 'sonarr.Import'.tr(),
-        icon: Icons.download_done_rounded,
-        onTap: () async {
-          final state = context.read<SonarrManualImportDetailsState>();
-          final imports = await state.imports!;
-          if (await state.submit(context, imports) && context.mounted)
-            Navigator.of(context).pop();
-        },
-      ),
-    ],
-  );
+    );
+  }
 }
 
 class _ImportsList extends StatelessWidget {
@@ -147,19 +161,71 @@ class _ImportTileState extends State<_ImportTile> {
 
   Future<void> _selectSeries(BuildContext context) async {
     final series =
-        (await context.read<SonarrState>().series)?.values.toList() ?? [];
+        ((await context.read<SonarrState>().series)?.values.toList() ?? [])
+          ..sort(
+            (a, b) => (a.sortTitle ?? a.title ?? '').compareTo(
+              b.sortTitle ?? b.title ?? '',
+            ),
+          );
+    var query = '';
     final selected = await showDialog<SonarrSeries>(
       context: context,
-      builder: (context) => SimpleDialog(
-        title: Text('sonarr.SelectSeries'.tr()),
-        children: series
-            .map(
-              (s) => SimpleDialogOption(
-                onPressed: () => Navigator.pop(context, s),
-                child: Text(s.title ?? LunaUI.TEXT_EMDASH),
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, update) {
+          final normalizedQuery = query.toLowerCase();
+          final matches = series.where((item) {
+            final titles = [
+              item.title,
+              item.sortTitle,
+              ...?item.alternateTitles?.map((title) => title.title),
+            ];
+            return titles.whereType<String>().any(
+              (title) => title.toLowerCase().contains(normalizedQuery),
+            );
+          }).toList();
+          return AlertDialog(
+            title: Text('sonarr.SelectSeries'.tr()),
+            content: SizedBox(
+              width: double.maxFinite,
+              height: 420,
+              child: Column(
+                children: [
+                  TextField(
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      hintText: 'lunasea.SearchTextBar'.tr(),
+                      prefixIcon: const Icon(Icons.search_rounded),
+                    ),
+                    onChanged: (value) => update(() => query = value),
+                  ),
+                  const SizedBox(height: LunaUI.DEFAULT_MARGIN_SIZE),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: matches.length,
+                      itemBuilder: (context, index) {
+                        final item = matches[index];
+                        final title = item.title ?? LunaUI.TEXT_EMDASH;
+                        return ListTile(
+                          title: Text(title),
+                          subtitle: item.year == null
+                              ? null
+                              : Text(item.year.toString()),
+                          onTap: () => Navigator.pop(dialogContext, item),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            )
-            .toList(),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text('lunasea.Cancel'.tr()),
+              ),
+            ],
+          );
+        },
       ),
     );
     if (selected != null) {
@@ -210,7 +276,7 @@ class _ImportTileState extends State<_ImportTile> {
       ...(widget.item.episodes ?? []).map((e) => e.id!).toSet(),
     };
     if (!mounted) return;
-    await showDialog<void>(
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, update) => AlertDialog(
@@ -233,15 +299,25 @@ class _ImportTileState extends State<_ImportTile> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              onPressed: () => update(() => chosen.clear()),
+              child: Text('lunasea.Clear'.tr()),
+            ),
+            TextButton(
+              onPressed: () => update(
+                () => chosen.addAll(episodes.map((episode) => episode.id!)),
+              ),
+              child: Text('sonarr.SelectAll'.tr()),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text('lunasea.Cancel'.tr()),
             ),
             TextButton(
               onPressed: () {
                 widget.item.episodes = episodes
                     .where((e) => chosen.contains(e.id))
                     .toList();
-                Navigator.pop(context);
+                Navigator.pop(context, true);
               },
               child: const Text('OK'),
             ),
@@ -249,6 +325,7 @@ class _ImportTileState extends State<_ImportTile> {
         ),
       ),
     );
+    if (confirmed != true) return;
     await context.read<SonarrManualImportDetailsState>().reprocess(
       context,
       widget.item,
@@ -294,7 +371,7 @@ class _ImportTileState extends State<_ImportTile> {
       ...(widget.item.languages ?? []).map((e) => e.id!).toSet(),
     };
     if (!mounted) return;
-    await showDialog<void>(
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, update) => AlertDialog(
@@ -317,15 +394,15 @@ class _ImportTileState extends State<_ImportTile> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              onPressed: () => Navigator.pop(context, false),
+              child: Text('lunasea.Cancel'.tr()),
             ),
             TextButton(
               onPressed: () {
                 widget.item.languages = languages
                     .where((l) => selected.contains(l.id))
                     .toList();
-                Navigator.pop(context);
+                Navigator.pop(context, true);
               },
               child: const Text('OK'),
             ),
@@ -333,6 +410,7 @@ class _ImportTileState extends State<_ImportTile> {
         ),
       ),
     );
+    if (confirmed != true) return;
     await context.read<SonarrManualImportDetailsState>().reprocess(
       context,
       widget.item,

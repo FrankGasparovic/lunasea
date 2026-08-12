@@ -27,6 +27,21 @@ class SonarrManualImportDetailsState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void toggleAll(List<SonarrManualImport> items) {
+    final validIds = items.where(isValid).map((item) => item.id!).toSet();
+    if (validIds.isNotEmpty && validIds.every(selected.contains)) {
+      selected.removeAll(validIds);
+    } else {
+      selected.addAll(validIds);
+    }
+    notifyListeners();
+  }
+
+  bool areAllValidSelected(List<SonarrManualImport> items) {
+    final validIds = items.where(isValid).map((item) => item.id!).toSet();
+    return validIds.isNotEmpty && validIds.every(selected.contains);
+  }
+
   void fetch(BuildContext context) {
     if (context.read<SonarrState>().enabled) {
       imports = context.read<SonarrState>().api!.manualImport.get(
@@ -86,7 +101,9 @@ class SonarrManualImportDetailsState extends ChangeNotifier {
         );
     if (result.isNotEmpty) {
       final updated = result.first;
-      item.series = updated.series;
+      // Sonarr's reprocess resource deliberately does not include `series` in
+      // its response; it returns only `seriesId`. Retain the selected series
+      // instead of overwriting it with null from deserialization.
       item.seasonNumber = updated.seasonNumber;
       item.episodes = updated.episodes;
       item.quality = updated.quality;

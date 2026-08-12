@@ -5,7 +5,7 @@ import 'package:lunasea/modules/tautulli.dart';
 extension TautulliActivityExtension on TautulliActivity {
   String get lunaSessionsHeader {
     if (this.streamCount == null || this.streamCount == 0)
-      return 'tautulli.sessionsMany'.tr(args: ['0']);
+      return 'tautulli.SessionsMany'.tr(args: ['0']);
     if (this.streamCount == 1) return 'tautulli.SessionsOne'.tr();
     return 'tautulli.SessionsMany'.tr(args: [this.streamCount.toString()]);
   }
