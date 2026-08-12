@@ -1,6 +1,6 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
-import 'package:file_picker/file_picker.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:lunasea/system/filesystem/file.dart';
 import 'package:lunasea/system/filesystem/filesystem.dart';
@@ -35,15 +35,13 @@ class _Web implements LunaFileSystem {
   @override
   Future<LunaFile?> read(BuildContext context, List<String> extensions) async {
     try {
-      final result = await FilePicker.pickFiles(withData: true);
-
-      if (result?.files.isNotEmpty ?? false) {
-        String? _ext = result!.files[0].extension;
+      final result = await openFile(
+        acceptedTypeGroups: [XTypeGroup(extensions: extensions)],
+      );
+      if (result != null) {
+        final _ext = result.name.split('.').last;
         if (LunaFileSystem.isValidExtension(extensions, _ext)) {
-          return LunaFile(
-            name: result.files[0].name,
-            data: result.files[0].bytes!,
-          );
+          return LunaFile(name: result.name, data: await result.readAsBytes());
         } else {
           showLunaErrorSnackBar(
             title: 'lunasea.InvalidFileTypeSelected'.tr(),

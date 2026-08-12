@@ -1,6 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data';
-import 'package:file_picker/file_picker.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:lunasea/database/database.dart';
 import 'package:lunasea/vendor.dart';
@@ -40,15 +39,10 @@ class _Desktop extends _Shared {
   @override
   Future<bool> save(BuildContext context, String name, List<int> data) async {
     try {
-      String? path = await FilePicker.saveFile(
-        fileName: name,
-        lockParentWindow: true,
-        bytes: Uint8List.fromList(data),
-      );
-      if (path != null) {
-        return true;
-      }
-      return false;
+      final location = await getSaveLocation(suggestedName: name);
+      if (location == null) return false;
+      await File(location.path).writeAsBytes(data);
+      return true;
     } catch (error, stack) {
       LunaLogger().error('Failed to save to filesystem', error, stack);
       rethrow;
@@ -58,15 +52,16 @@ class _Desktop extends _Shared {
   @override
   Future<LunaFile?> read(BuildContext context, List<String> extensions) async {
     try {
-      final result = await FilePicker.pickFiles(withData: true);
-
-      if (result?.files.isNotEmpty ?? false) {
-        String? _ext = result!.files[0].extension;
+      final result = await openFile(
+        acceptedTypeGroups: [XTypeGroup(extensions: extensions)],
+      );
+      if (result != null) {
+        final _ext = result.name.split('.').last;
         if (LunaFileSystem.isValidExtension(extensions, _ext)) {
           return LunaFile(
-            name: result.files[0].name,
-            path: result.files[0].path!,
-            data: result.files[0].bytes!,
+            name: result.name,
+            path: result.path,
+            data: await result.readAsBytes(),
           );
         } else {
           showLunaErrorSnackBar(
@@ -98,10 +93,9 @@ class _Mobile extends _Shared {
       Rect? rect;
       if (box != null) rect = box.localToGlobal(Offset.zero) & box.size;
 
-      ShareResult result = await Share.shareXFiles(
-        [XFile(path)],
-        sharePositionOrigin: rect,
-      );
+      ShareResult result = await Share.shareXFiles([
+        XFile(path),
+      ], sharePositionOrigin: rect);
       switch (result.status) {
         case ShareResultStatus.success:
           return true;
@@ -118,15 +112,16 @@ class _Mobile extends _Shared {
   @override
   Future<LunaFile?> read(BuildContext context, List<String> extensions) async {
     try {
-      final result = await FilePicker.pickFiles(withData: true);
-
-      if (result?.files.isNotEmpty ?? false) {
-        String? _ext = result!.files[0].extension;
+      final result = await openFile(
+        acceptedTypeGroups: [XTypeGroup(extensions: extensions)],
+      );
+      if (result != null) {
+        final _ext = result.name.split('.').last;
         if (LunaFileSystem.isValidExtension(extensions, _ext)) {
           return LunaFile(
-            name: result.files[0].name,
-            path: result.files[0].path!,
-            data: result.files[0].bytes!,
+            name: result.name,
+            path: result.path,
+            data: await result.readAsBytes(),
           );
         } else {
           showLunaErrorSnackBar(

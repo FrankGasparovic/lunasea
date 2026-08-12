@@ -16,7 +16,7 @@ dependencies:
   easy_localization: ^3.0.2
   encrypt: ^5.0.1
   expandable: ^5.0.1
-  file_picker: ^12.0.0-beta.7
+  file_selector: ^1.1.0
   fl_chart: ^1.2.0
   flash: ^3.0.5+1
   flutter_cache_manager: ^3.3.1
@@ -27,7 +27,7 @@ dependencies:
   hive_ce: ^2.19.3
   hive_ce_flutter: ^2.3.4
   infinite_scroll_pagination: ^5.1.1
-  intl: ^0.18.1
+  intl: ^0.20.2
   json_annotation: ^4.12.0
   modal_bottom_sheet: ^3.0.0-pre
   package_info_plus: ^10.2.1
@@ -55,14 +55,13 @@ dev_dependencies:
   environment_config: ^4.0.0+1
   json_serializable: ^6.14.1
   hive_ce_generator: 1.11.2
-  retrofit_generator: 10.2.5
+  retrofit_generator: ^10.2.8
   # Tooling
   flutter_launcher_icons: ^0.14.3
   flutter_lints: ^6.0.0
   flutter_native_splash: ^2.3.2
   msix: ^3.16.1
 dependency_overrides:
-  intl: ^0.18.1
   http: ^1.0.0
 flutter:
   uses-material-design: true
