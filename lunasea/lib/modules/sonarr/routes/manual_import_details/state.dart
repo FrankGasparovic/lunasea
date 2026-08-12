@@ -28,18 +28,51 @@ class SonarrManualImportDetailsState extends ChangeNotifier {
   }
 
   void toggleAll(List<SonarrManualImport> items) {
-    final validIds = items.where(isValid).map((item) => item.id!).toSet();
-    if (validIds.isNotEmpty && validIds.every(selected.contains)) {
-      selected.removeAll(validIds);
+    final selectableIds = items
+        .where((item) => item.id != null && (item.path?.isNotEmpty ?? false))
+        .map((item) => item.id!)
+        .toSet();
+    if (selectableIds.isNotEmpty && selectableIds.every(selected.contains)) {
+      selected.removeAll(selectableIds);
     } else {
-      selected.addAll(validIds);
+      selected.addAll(selectableIds);
     }
     notifyListeners();
   }
 
-  bool areAllValidSelected(List<SonarrManualImport> items) {
-    final validIds = items.where(isValid).map((item) => item.id!).toSet();
-    return validIds.isNotEmpty && validIds.every(selected.contains);
+  bool areAllSelected(List<SonarrManualImport> items) {
+    final selectableIds = items
+        .where((item) => item.id != null && (item.path?.isNotEmpty ?? false))
+        .map((item) => item.id!)
+        .toSet();
+    return selectableIds.isNotEmpty && selectableIds.every(selected.contains);
+  }
+
+  List<SonarrManualImport> selectedItems(List<SonarrManualImport> items) =>
+      items.where((item) => selected.contains(item.id)).toList();
+
+  SonarrSeries? selectedSeries(List<SonarrManualImport> items) {
+    final selectedImports = selectedItems(items);
+    if (selectedImports.isEmpty) return null;
+    final series = selectedImports.first.series;
+    if (series?.id == null ||
+        !selectedImports.every((item) => item.series?.id == series!.id))
+      return null;
+    return series;
+  }
+
+  bool canSubmit(List<SonarrManualImport> items) {
+    final selectedImports = selectedItems(items);
+    return selectedImports.isNotEmpty && selectedImports.every(isValid);
+  }
+
+  Future<void> reprocessItems(
+    BuildContext context,
+    Iterable<SonarrManualImport> items,
+  ) async {
+    for (final item in items) {
+      await reprocess(context, item);
+    }
   }
 
   void fetch(BuildContext context) {
@@ -104,12 +137,11 @@ class SonarrManualImportDetailsState extends ChangeNotifier {
       // Sonarr's reprocess resource deliberately does not include `series` in
       // its response; it returns only `seriesId`. Retain the selected series
       // instead of overwriting it with null from deserialization.
-      item.seasonNumber = updated.seasonNumber;
+      item.seasonNumber = updated.seasonNumber ?? item.seasonNumber;
       item.episodes = updated.episodes;
       item.quality = updated.quality;
       item.languages = updated.languages;
       item.rejections = updated.rejections;
-      if (!isValid(item) && item.id != null) selected.remove(item.id);
     }
     notifyListeners();
     return item;
