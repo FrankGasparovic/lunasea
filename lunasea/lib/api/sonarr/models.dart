@@ -8,6 +8,21 @@ export 'models/calendar/calendar.dart';
 export 'models/command/command.dart';
 export 'models/command/command_body.dart';
 
+/// Filesystem
+export 'models/filesystem/filesystem.dart';
+export 'models/filesystem/directory.dart';
+export 'models/filesystem/file.dart';
+
+/// Manual Import
+export 'models/manual_import/manual_import.dart';
+export 'models/manual_import/manual_import_file.dart';
+export 'models/manual_import/manual_import_rejection.dart';
+export 'models/manual_import/manual_import_reprocess.dart';
+
+/// Language and quality definitions
+export 'models/language/language.dart';
+export 'models/quality_definition/quality_definition.dart';
+
 /// Episode
 export 'models/episode/episode.dart';
 

@@ -9,6 +9,10 @@ class SonarrAPI {
     required this.httpClient,
     required this.calendar,
     required this.command,
+    required this.fileSystem,
+    required this.language,
+    required this.manualImport,
+    required this.qualityDefinition,
     required this.episode,
     required this.episodeFile,
     required this.history,
@@ -51,6 +55,10 @@ class SonarrAPI {
       httpClient: _dio,
       calendar: SonarrControllerCalendar(_dio),
       command: SonarrControllerCommand(_dio),
+      fileSystem: SonarrControllerFileSystem(_dio),
+      language: SonarrControllerLanguage(_dio),
+      manualImport: SonarrControllerManualImport(_dio),
+      qualityDefinition: SonarrControllerQualityDefinition(_dio),
       episode: SonarrControllerEpisode(_dio),
       episodeFile: SonarrControllerEpisodeFile(_dio),
       history: SonarrControllerHistory(_dio),
@@ -72,6 +80,10 @@ class SonarrAPI {
       httpClient: client,
       calendar: SonarrControllerCalendar(client),
       command: SonarrControllerCommand(client),
+      fileSystem: SonarrControllerFileSystem(client),
+      language: SonarrControllerLanguage(client),
+      manualImport: SonarrControllerManualImport(client),
+      qualityDefinition: SonarrControllerQualityDefinition(client),
       episode: SonarrControllerEpisode(client),
       episodeFile: SonarrControllerEpisodeFile(client),
       history: SonarrControllerHistory(client),
@@ -92,6 +104,10 @@ class SonarrAPI {
 
   final SonarrControllerCalendar calendar;
   final SonarrControllerCommand command;
+  final SonarrControllerFileSystem fileSystem;
+  final SonarrControllerLanguage language;
+  final SonarrControllerManualImport manualImport;
+  final SonarrControllerQualityDefinition qualityDefinition;
   final SonarrControllerEpisode episode;
   final SonarrControllerEpisodeFile episodeFile;
   final SonarrControllerHistory history;

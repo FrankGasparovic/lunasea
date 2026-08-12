@@ -12,3 +12,4 @@ part 'types/series_monitor_type.dart';
 part 'types/series_type.dart';
 part 'types/sort_dir.dart';
 part 'types/wanted_missing_sort_key.dart';
+part 'types/import_mode.dart';

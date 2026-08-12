@@ -49,15 +49,15 @@ class _State extends State<SonarrMoreRoute> with AutomaticKeepAliveClientMixin {
           ),
           onTap: SonarrRoutes.HISTORY.go,
         ),
-        // LunaBlock(
-        //   title: 'sonarr.ManualImport'.tr(),
-        //   body: [TextSpan(text: 'sonarr.ManualImportDescription'.tr())],
-        //   trailing: LunaIconButton(
-        //     icon: Icons.download_done_rounded,
-        //     color: LunaColours().byListIndex(1),
-        //   ),
-        //   onTap: () async => _showComingSoonMessage(),
-        // ),
+        LunaBlock(
+          title: 'sonarr.ManualImport'.tr(),
+          body: [TextSpan(text: 'sonarr.ManualImportDescription'.tr())],
+          trailing: LunaIconButton(
+            icon: Icons.download_done_rounded,
+            color: LunaColours().byListIndex(1),
+          ),
+          onTap: SonarrRoutes.MANUAL_IMPORT.go,
+        ),
         LunaBlock(
           title: 'sonarr.Queue'.tr(),
           body: [TextSpan(text: 'sonarr.QueueDescription'.tr())],

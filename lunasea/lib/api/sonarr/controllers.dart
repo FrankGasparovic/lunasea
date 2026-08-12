@@ -22,6 +22,24 @@ part 'controllers/command/rescan_series.dart';
 part 'controllers/command/rss_sync.dart';
 part 'controllers/command/season_search.dart';
 part 'controllers/command/series_search.dart';
+part 'controllers/command/manual_import.dart';
+
+// Filesystem
+part 'controllers/filesystem.dart';
+part 'controllers/filesystem/get_filesystem.dart';
+
+// Language
+part 'controllers/language.dart';
+part 'controllers/language/get_languages.dart';
+
+// Manual Import
+part 'controllers/manual_import.dart';
+part 'controllers/manual_import/get_manual_import.dart';
+part 'controllers/manual_import/reprocess_manual_import.dart';
+
+// Quality Definition
+part 'controllers/quality_definition.dart';
+part 'controllers/quality_definition/get_quality_definitions.dart';
 
 // Episode File
 part 'controllers/episode_file.dart';

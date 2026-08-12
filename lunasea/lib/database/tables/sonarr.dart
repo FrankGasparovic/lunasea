@@ -35,6 +35,7 @@ enum SonarrDatabase<T> with LunaTableMixin<T> {
   QUEUE_REFRESH_RATE<int>(15),
   QUEUE_REMOVE_DOWNLOAD_CLIENT<bool>(false),
   QUEUE_ADD_BLOCKLIST<bool>(false),
+  MANUAL_IMPORT_MODE<String>('copy'),
   CONTENT_PAGE_SIZE<int>(10);
 
   @override
