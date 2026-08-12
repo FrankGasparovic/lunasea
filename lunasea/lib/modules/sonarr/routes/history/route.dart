@@ -15,8 +15,17 @@ class _State extends State<HistoryRoute>
     with LunaScrollControllerMixin, LunaLoadCallbackMixin {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _refreshKey = GlobalKey<RefreshIndicatorState>();
-  final _pagingController =
-      PagingController<int, SonarrHistoryRecord>(firstPageKey: 1);
+  late final PagingController<int, SonarrHistoryRecord> _pagingController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pagingController = PagingController(
+      getNextPageKey: (state) =>
+          state.lastPageIsEmpty ? null : (state.keys?.last ?? 0) + 1,
+      fetchPage: _fetchPage,
+    );
+  }
 
   @override
   Future<void> loadCallback() async {
@@ -29,31 +38,24 @@ class _State extends State<HistoryRoute>
     super.dispose();
   }
 
-  Future<void> _fetchPage(int pageKey) async {
-    await context
-        .read<SonarrState>()
-        .api!
-        .history
-        .get(
-          page: pageKey,
-          pageSize: SonarrDatabase.CONTENT_PAGE_SIZE.read(),
-          sortKey: SonarrHistorySortKey.DATE,
-          sortDirection: SonarrSortDirection.DESCENDING,
-          includeEpisode: true,
-        )
-        .then((data) {
-      if (data.totalRecords! > (data.page! * data.pageSize!)) {
-        return _pagingController.appendPage(data.records!, pageKey + 1);
-      }
-      return _pagingController.appendLastPage(data.records!);
-    }).catchError((error, stack) {
+  Future<List<SonarrHistoryRecord>> _fetchPage(int pageKey) async {
+    try {
+      final data = await context.read<SonarrState>().api!.history.get(
+            page: pageKey,
+            pageSize: SonarrDatabase.CONTENT_PAGE_SIZE.read(),
+            sortKey: SonarrHistorySortKey.DATE,
+            sortDirection: SonarrSortDirection.DESCENDING,
+            includeEpisode: true,
+          );
+      return data.records!;
+    } catch (error, stack) {
       LunaLogger().error(
         'Unable to fetch Sonarr history page: $pageKey',
         error,
         stack,
       );
-      _pagingController.error = error;
-    });
+      rethrow;
+    }
   }
 
   @override
@@ -97,7 +99,6 @@ class _State extends State<HistoryRoute>
       refreshKey: _refreshKey,
       pagingController: _pagingController,
       scrollController: scrollController,
-      listener: _fetchPage,
       noItemsFoundMessage: 'sonarr.NoHistoryFound'.tr(),
       itemBuilder: (context, history, _) => SonarrHistoryTile(
         history: history,

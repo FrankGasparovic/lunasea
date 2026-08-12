@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:lunasea/database/database.dart';
@@ -39,13 +40,12 @@ class _Desktop extends _Shared {
   @override
   Future<bool> save(BuildContext context, String name, List<int> data) async {
     try {
-      String? path = await FilePicker.platform.saveFile(
+      String? path = await FilePicker.saveFile(
         fileName: name,
         lockParentWindow: true,
+        bytes: Uint8List.fromList(data),
       );
       if (path != null) {
-        File file = File(path);
-        file.writeAsBytesSync(data);
         return true;
       }
       return false;
@@ -58,7 +58,7 @@ class _Desktop extends _Shared {
   @override
   Future<LunaFile?> read(BuildContext context, List<String> extensions) async {
     try {
-      final result = await FilePicker.platform.pickFiles(withData: true);
+      final result = await FilePicker.pickFiles(withData: true);
 
       if (result?.files.isNotEmpty ?? false) {
         String? _ext = result!.files[0].extension;
@@ -118,7 +118,7 @@ class _Mobile extends _Shared {
   @override
   Future<LunaFile?> read(BuildContext context, List<String> extensions) async {
     try {
-      final result = await FilePicker.platform.pickFiles(withData: true);
+      final result = await FilePicker.pickFiles(withData: true);
 
       if (result?.files.isNotEmpty ?? false) {
         String? _ext = result!.files[0].extension;
