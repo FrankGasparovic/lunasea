@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lunasea/core.dart';
+import 'package:lunasea/extensions/datetime.dart';
 import 'package:lunasea/modules/tdarr.dart';
 
 class TdarrReportRoute extends StatefulWidget {
@@ -30,19 +31,18 @@ class _TdarrReportRouteState extends State<TdarrReportRoute> {
   Widget build(BuildContext context) {
     return LunaScaffold(
       scaffoldKey: GlobalKey<ScaffoldState>(),
-      appBar: LunaAppBar(title: widget.report.filename),
+      appBar: LunaAppBar(title: 'tdarr.JobReport'.tr()),
       body: FutureBuilder<String>(
         future: _report,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const LunaLoader();
           }
-          if (snapshot.hasError) {
-            return LunaMessage.error(onTap: _retry);
-          }
+          if (snapshot.hasError) return LunaMessage.error(onTap: _retry);
           return TdarrReportText(
             text: snapshot.data ?? '',
             failedReport: widget.report.failed,
+            report: widget.report,
           );
         },
       ),
@@ -53,11 +53,13 @@ class _TdarrReportRouteState extends State<TdarrReportRoute> {
 class TdarrReportText extends StatelessWidget {
   final String text;
   final bool failedReport;
+  final TdarrJobReport? report;
 
   const TdarrReportText({
     super.key,
     required this.text,
     this.failedReport = false,
+    this.report,
   });
 
   @override
@@ -68,45 +70,29 @@ class TdarrReportText extends StatelessWidget {
       failedReport: failedReport,
     );
     if (sections.isNotEmpty) {
+      final failedSections = sections.where((section) => section.failed).length;
       return ListView(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.only(bottom: 24),
         children: [
-          Text(
-            '${sections.length} sections',
-            style: const TextStyle(color: LunaColours.blueGrey, fontSize: 12),
+          if (report != null)
+            _TdarrReportSummary(
+              report: report!,
+              sectionCount: sections.length,
+              failedCount: failedSections,
+            ),
+          LunaHeader(
+            text: 'tdarr.Sections'.tr(),
+            subtitle: failedSections == 0
+                ? 'tdarr.SectionCount'.tr(args: ['${sections.length}'])
+                : 'tdarr.SectionFailureCount'.tr(
+                    args: ['${sections.length}', '$failedSections'],
+                  ),
           ),
-          const SizedBox(height: 8),
           ...sections.map((section) => _TdarrReportSectionTile(section)),
         ],
       );
     }
-    final lines = normalized.split('\n');
-    return SelectionArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${lines.length} lines',
-              style: const TextStyle(color: LunaColours.blueGrey, fontSize: 12),
-            ),
-            const SizedBox(height: 8),
-            Text.rich(
-              TextSpan(
-                children: [for (final line in lines) ..._lineSpans(line)],
-              ),
-              softWrap: true,
-              style: const TextStyle(
-                fontFamily: 'monospace',
-                fontSize: 12,
-                height: 1.45,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return _RawTdarrReport(text: normalized, report: report);
   }
 
   static List<TextSpan> _lineSpans(String line) {
@@ -158,6 +144,153 @@ class _TdarrReportLineStyle {
   const _TdarrReportLineStyle(this.color, this.emphasize);
 }
 
+class _TdarrReportSummary extends StatelessWidget {
+  final TdarrJobReport report;
+  final int sectionCount;
+  final int failedCount;
+
+  const _TdarrReportSummary({
+    required this.report,
+    required this.sectionCount,
+    required this.failedCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final resultColor = report.failed ? LunaColours.red : LunaColours.accent;
+    return LunaCard(
+      context: context,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              report.filename,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 16,
+              runSpacing: 6,
+              children: [
+                _SummaryValue(
+                  label: 'tdarr.Result'.tr(),
+                  value: report.status,
+                  color: resultColor,
+                ),
+                _SummaryValue(
+                  label: 'tdarr.CompletedAt'.tr(),
+                  value: report.timestamp.year == 1970
+                      ? tdarrUnavailable
+                      : report.timestamp.asDateTime(),
+                ),
+                _SummaryValue(
+                  label: 'tdarr.Sections'.tr(),
+                  value: '$sectionCount',
+                ),
+                _SummaryValue(
+                  label: 'tdarr.FailedSteps'.tr(),
+                  value: '$failedCount',
+                  color: failedCount > 0 ? LunaColours.red : null,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SummaryValue extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color? color;
+
+  const _SummaryValue({required this.label, required this.value, this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: const TextStyle(
+            color: LunaColours.grey,
+            fontSize: LunaUI.FONT_SIZE_H5,
+          ),
+        ),
+        Text(
+          value,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: color ?? Colors.white,
+            fontWeight: LunaUI.FONT_WEIGHT_BOLD,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _RawTdarrReport extends StatelessWidget {
+  final String text;
+  final TdarrJobReport? report;
+
+  const _RawTdarrReport({required this.text, this.report});
+
+  @override
+  Widget build(BuildContext context) {
+    final lines = text.split('\n');
+    final localizedLineCount = 'tdarr.LineCount'.tr(args: ['${lines.length}']);
+    final lineCount = localizedLineCount.startsWith('tdarr.')
+        ? '${lines.length} lines'
+        : localizedLineCount;
+    return SelectionArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(bottom: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (report != null)
+              _TdarrReportSummary(
+                report: report!,
+                sectionCount: 0,
+                failedCount: 0,
+              ),
+            LunaHeader(text: 'tdarr.RawReport'.tr(), subtitle: lineCount),
+            LunaCard(
+              context: context,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      for (final line in lines)
+                        ...TdarrReportText._lineSpans(line),
+                    ],
+                  ),
+                  softWrap: true,
+                  style: const TextStyle(
+                    fontFamily: 'monospace',
+                    fontSize: 12,
+                    height: 1.45,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class TdarrReportSection {
   final String step;
   final String source;
@@ -186,7 +319,8 @@ class TdarrReportSection {
     void finish() {
       if (currentStep == null || current.isEmpty) return;
       final heading = current.first.trim();
-      final stepMatch = RegExp(r'\[Step\s+([^\]]+)\]').firstMatch(heading)!;
+      final stepMatch = RegExp(r'\[Step\s+([^\]]+)\]').firstMatch(heading);
+      if (stepMatch == null) return;
       final source = heading
           .substring(0, stepMatch.start)
           .replaceFirst(RegExp(r':$'), '');
@@ -214,9 +348,7 @@ class TdarrReportSection {
         finish();
         currentStep = match.group(0);
         current.add(line);
-      } else if (currentStep == null) {
-        continue;
-      } else {
+      } else if (currentStep != null) {
         current.add(line);
       }
     }
@@ -228,9 +360,7 @@ class TdarrReportSection {
     r'^\d+(?:\.\d+)?(?:ms|s|m|h)(?:\s+\d+(?:\.\d+)?(?:ms|s|m|h))*$',
   ).hasMatch(line);
 
-  /// Tdarr's terminal error marker identifies the event which actually ended
-  /// the job. Words such as `onFlowError` are routine flow names and must not
-  /// turn an otherwise successful step red.
+  /// Only Tdarr's terminal error marker turns a parsed step red.
   static bool _hasTerminalFailure(List<String> lines) => lines.any(
     (line) => RegExp(
       r'\[\s*-(?:error|fail(?:ed)?)\s*-\]|job\s+end\s+with\s+(?:an?\s+)?error',
@@ -247,10 +377,10 @@ class _TdarrReportSectionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = section.failed ? LunaColours.red : LunaColours.accent;
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+    return LunaCard(
+      context: context,
       child: ExpansionTile(
-        initiallyExpanded: false,
+        initiallyExpanded: section.failed,
         leading: Icon(
           section.failed ? Icons.cancel_rounded : Icons.check_circle_rounded,
           color: color,

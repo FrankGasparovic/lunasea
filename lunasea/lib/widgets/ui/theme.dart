@@ -15,8 +15,22 @@ class LunaTheme {
     return isAMOLEDTheme ? _pureBlackTheme() : _midnightTheme();
   }
 
-  static bool get isAMOLEDTheme => LunaSeaDatabase.THEME_AMOLED.read();
-  static bool get useBorders => LunaSeaDatabase.THEME_AMOLED_BORDER.read();
+  static bool get isAMOLEDTheme {
+    try {
+      return LunaSeaDatabase.THEME_AMOLED.read();
+    } catch (_) {
+      // Keep shared widgets usable in isolated widget tests before Hive opens.
+      return false;
+    }
+  }
+
+  static bool get useBorders {
+    try {
+      return LunaSeaDatabase.THEME_AMOLED_BORDER.read();
+    } catch (_) {
+      return false;
+    }
+  }
 
   /// Midnight theme (Default)
   ThemeData _midnightTheme() {
